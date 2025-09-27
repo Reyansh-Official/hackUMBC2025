@@ -1,5 +1,6 @@
 # hackUMBC 2025
 Our project for UMBC Hackathon 2025
+Collaborators: Reyansh Attavar, Aklank Jain, Saumya Patel
 
 ## Project Structure
 
