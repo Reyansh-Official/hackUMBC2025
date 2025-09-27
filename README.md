@@ -1,4 +1,4 @@
-# hackUMBC2025
+# hackUMBC 2025
 Our project for UMBC Hackathon 2025
 
 ## Project Structure
