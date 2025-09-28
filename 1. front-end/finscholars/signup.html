@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinScholars - Sign Up</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Mock authentication instead of using Supabase
+    window.mockAuth = {
+      signUp: function(email, password) {
+        // Store user in localStorage
+        localStorage.setItem('user', JSON.stringify({email, password}));
+        // Redirect to dashboard
+        window.location.href = 'dashboard.html';
+        return Promise.resolve({user: {email}, session: {access_token: 'mock-token'}});
+      },
+      signIn: function(email, password) {
+        // Check if user exists
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.email === email && user.password === password) {
+          window.location.href = 'dashboard.html';
+          return Promise.resolve({user: {email}, session: {access_token: 'mock-token'}});
+        }
+        return Promise.reject(new Error('Invalid login credentials'));
+      }
+    };
+    
+    // Replace Supabase with mock
+    window.supabase = {
+      auth: {
+        signUp: (credentials) => mockAuth.signUp(credentials.email, credentials.password),
+        signIn: (credentials) => mockAuth.signIn(credentials.email, credentials.password)
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --color-background: #0a0e17;
+      --color-background-light: #141a29;
+      --color-text: #e6f1ff;
+      --color-text-secondary: #a2b3cd;
+      --color-accent: #4bcfea;
+      --color-accent-rich: #3a9fc5;
+      --color-error: #ff6b6b;
+      --color-success: #4cd964;
+      --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--color-background);
+      color: var(--color-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .signup-page-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .signup-form {
+      background: rgba(20, 26, 41, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .form-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      background: linear-gradient(to right, var(--color-text), var(--color-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .form-input {
+      width: 100%;
+      background: rgba(10, 14, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 1rem;
+      color: var(--color-text);
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(75, 207, 234, 0.3);
+    }
+    
+    .form-input::placeholder {
+      color: var(--color-text-secondary);
+      opacity: 0.7;
+    }
+    
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-checkbox input {
+      margin-right: 0.5rem;
+    }
+    
+    .form-checkbox label {
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .signup-button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-rich) 100%);
+      color: var(--color-background);
+      border: none;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(75, 207, 234, 0.4);
+      margin-top: 20px;
+    }
+    
+    .signup-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(75, 207, 234, 0.6);
+    }
+    
+    .signup-button:active {
+      transform: translateY(1px);
+    }
+    
+    .signup-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: translateY(0);
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 2rem 0;
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .divider::before {
+      margin-right: 1rem;
+    }
+    
+    .divider::after {
+      margin-left: 1rem;
+    }
+    
+    .form-footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: var(--color-text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    .form-footer a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .form-footer a:hover {
+      text-shadow: 0 0 8px rgba(75, 207, 234, 0.5);
+    }
+    
+    .error-message {
+      color: var(--color-error);
+      font-size: 0.9rem;
+      margin-top: -1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .success-message {
+      color: var(--color-success);
+      font-size: 0.9rem;
+      margin-top: -1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .interests-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    
+    .interest-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .interest-option:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .interest-option input[type="checkbox"] {
+      accent-color: var(--color-accent);
+    }
+    
+    .back-button {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background: none;
+      border: none;
+      color: var(--color-text);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .back-button:hover {
+      color: var(--color-accent);
+    }
+    
+    /* Background animation */
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    /* Cursor animation */
+    .cursor {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(75, 207, 234, 0.2);
+      pointer-events: none;
+      mix-blend-mode: screen;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+  </style>
+</head>
+<body>
+  <canvas class="background-animation"></canvas>
+  <div class="cursor" style="display: none;"></div>
+  
+  
+  
+  <div class="signup-page-container">
+    <form class="signup-form" id="signupForm">
+      <h1 class="form-title">Create Account</h1>
+      
+      <div id="errorMessage" class="error-message" style="display: none;"></div>
+      <div id="successMessage" class="success-message" style="display: none;"></div>
+      
+      <input type="text" class="form-input" id="fullName" placeholder="Full Name" required>
+      <input type="email" class="form-input" id="email" placeholder="Email" required>
+      <input type="password" class="form-input" id="password" placeholder="Password" required>
+      <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm Password" required>
+      
+      <div class="form-checkbox">
+        <input type="checkbox" id="termsAgreement" required>
+        <label for="termsAgreement">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+      </div>
+      
+      <div class="form-group">
+        <label for="interests">Select Your Financial Interests</label>
+        <div class="interests-container">
+          <div class="interest-option">
+            <input type="checkbox" id="budgeting" name="interests" value="budgeting">
+            <label for="budgeting">Budgeting</label>
+          </div>
+          <div class="interest-option">
+            <input type="checkbox" id="investing" name="interests" value="investing">
+            <label for="investing">Investing</label>
+          </div>
+          <div class="interest-option">
+            <input type="checkbox" id="retirement" name="interests" value="retirement">
+            <label for="retirement">Retirement Planning</label>
+          </div>
+          <div class="interest-option">
+            <input type="checkbox" id="credit" name="interests" value="credit">
+            <label for="credit">Credit Management</label>
+          </div>
+          <div class="interest-option">
+            <input type="checkbox" id="taxes" name="interests" value="taxes">
+            <label for="taxes">Taxes</label>
+          </div>
+          <div class="interest-option">
+            <input type="checkbox" id="real-estate" name="interests" value="real-estate">
+            <label for="real-estate">Real Estate</label>
+          </div>
+        </div>
+      </div>
+      
+      <button type="submit" class="signup-button" id="signupButton">Sign Up</button>
+      
+      <div class="form-footer">
+        Already have an account? <a href="login.html">Log in</a>
+      </div>
+    </form>
+  </div>
+  
+  <script>
+    // Supabase client is already initialized in the head section
+    
+    // Background animation
+    const canvas = document.querySelector('.background-animation');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    
+    const particles = [];
+    const particleCount = 100;
+    
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 2 + 1,
+        color: `rgba(75, 207, 234, ${Math.random() * 0.5})`,
+        speed: Math.random() * 0.5 + 0.2
+      });
+    }
+    
+    function drawParticles() {
+      ctx.clearRect(0, 0, width, height);
+      
+      particles.forEach(particle => {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color;
+        ctx.fill();
+        
+        particle.y -= particle.speed;
+        
+        if (particle.y < -10) {
+          particle.y = height + 10;
+          particle.x = Math.random() * width;
+        }
+      });
+      
+      requestAnimationFrame(drawParticles);
+    }
+    
+    drawParticles();
+    
+    // Cursor animation
+    const cursor = document.querySelector('.cursor');
+    
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    
+    // Signup form handling
+    const signupForm = document.getElementById('signupForm');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const signupButton = document.getElementById('signupButton');
+      
+      // Get selected interests
+      const interestCheckboxes = document.querySelectorAll('input[name="interests"]:checked');
+      const selectedInterests = Array.from(interestCheckboxes).map(checkbox => checkbox.value);
+      
+      // Validate password length (minimum 6 characters)
+      if (password.length < 6) {
+        errorMessage.textContent = 'Password must be at least 6 characters long';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        errorMessage.textContent = 'Passwords do not match';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      // Validate at least one interest is selected
+      if (selectedInterests.length === 0) {
+        errorMessage.textContent = 'Please select at least one financial interest';
+        errorMessage.style.display = 'block';
+        return;
+      }
+      
+      // Disable button and show loading state
+      signupButton.disabled = true;
+      signupButton.textContent = 'Creating account...';
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      
+      try {
+        // For development with mock Supabase, we'll use our backend API
+        // First register with Supabase
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: fullName,
+              interests: selectedInterests
+            },
+            emailRedirectTo: window.location.origin + '/login.html'
+          }
+        });
+        
+        if (error) throw error;
+        
+        // Check if email confirmation is needed
+        if (data?.user?.identities?.length === 0) {
+          // User already exists but hasn't confirmed their email
+          successMessage.textContent = 'This email is already registered but not confirmed. Please check your inbox for the confirmation email.';
+          successMessage.style.display = 'block';
+        } else {
+          // Success - store user data
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          // Mock successful registration instead of calling backend API
+          console.log('Using mock registration data');
+          // Simulate successful registration
+          const mockRegistrationData = {
+            success: true,
+            message: "User registered successfully",
+            user_id: data.user.id
+          };
+          console.log('Mock registration response:', mockRegistrationData);
+          
+          // Show success message for email verification
+          successMessage.textContent = 'Account created successfully! Please check your email to verify your account before logging in.';
+          successMessage.style.display = 'block';
+        }
+        
+        // Don't redirect automatically - wait for email verification
+        signupButton.disabled = false;
+        signupButton.textContent = 'Sign Up';
+        
+      } catch (error) {
+        // Show error message
+        errorMessage.textContent = error.message || 'Failed to create account. Please try again.';
+        errorMessage.style.display = 'block';
+        
+        // Reset button
+        signupButton.disabled = false;
+        signupButton.textContent = 'Sign Up';
+      }
+    });
+  </script>
+</body>
+</html>

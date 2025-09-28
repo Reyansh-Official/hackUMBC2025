@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - FinScholars</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script>
+        // Mock Supabase client for development
+        var mockSupabase = {
+            auth: {
+                getUser: () => Promise.resolve({ data: { user: { id: 'mock-user-id', email: 'user@example.com' } } }),
+                onAuthStateChange: (callback) => {
+                    // Simulate authenticated state
+                    callback('SIGNED_IN', { user: { id: 'mock-user-id', email: 'user@example.com' } });
+                    return { data: { subscription: { unsubscribe: () => {} } } };
+                },
+                signOut: () => Promise.resolve({ error: null })
+            },
+            from: (table) => ({
+                select: (columns) => ({
+                    eq: (column, value) => ({
+                        then: (callback) => {
+                            if (table === 'user_topics') {
+                                // Mock user interests data
+                                callback({ data: [
+                                    { topic: 'budgeting', proficiency_level: 'Basic' },
+                                    { topic: 'investing', proficiency_level: 'Basic' }
+                                ], error: null });
+                            }
+                        }
+                    })
+                }),
+                upsert: (data) => ({
+                    then: (callback) => callback({ data, error: null })
+                }),
+                delete: () => ({
+                    eq: (column, value) => ({
+                        then: (callback) => callback({ data: null, error: null })
+                    })
+                })
+            }),
+            createClient: () => mockSupabase
+        };
+        
+        window.supabase = mockSupabase;
+    </script>
+    <style>
+        :root {
+            --color-background: #0a1929;
+            --color-accent: #4BCFEA;
+            --color-accent-rich: #36A9D9;
+            --color-success: #00E676;
+            --glass-background: rgba(255, 255, 255, 0.05);
+            --glass-background-accent: rgba(255, 255, 255, 0.08);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --glass-glow: 0 0 15px rgba(75, 207, 234, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--color-background);
+            color: white;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Background animation */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Cursor animation */
+        .cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(75, 207, 234, 0.2);
+            pointer-events: none;
+            mix-blend-mode: screen;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-header h1 {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: rgba(75, 207, 234, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(75, 207, 234, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(75, 207, 234, 0.4);
+        }
+        
+        .card h2 {
+            color: white;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: linear-gradient(to right, #4BCFEA, #36A9D9);
+            border-radius: 4px;
+            width: var(--progress, 0%);
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .interests-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .interest-option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: var(--glass-border);
+            background: var(--glass-background);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .interest-option:hover {
+            background: var(--glass-background-accent);
+            border-color: var(--color-accent);
+            box-shadow: var(--glass-glow);
+        }
+        
+        .interest-option.selected {
+            background: rgba(75, 207, 234, 0.15);
+            border-color: var(--color-accent);
+            box-shadow: var(--glass-glow);
+        }
+        
+        .interest-option input {
+            margin-right: 10px;
+            accent-color: var(--color-accent);
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, #4BCFEA, #36A9D9);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(75, 207, 234, 0.4);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to right, #36A9D9, #4BCFEA);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(75, 207, 234, 0.6);
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            backdrop-filter: blur(12px);
+        }
+        
+        .alert-success {
+            background-color: rgba(0, 230, 118, 0.1);
+            color: var(--color-success);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+        
+        .alert-danger {
+            background-color: rgba(255, 76, 76, 0.1);
+            color: #ff4c4c;
+            border: 1px solid rgba(255, 76, 76, 0.3);
+        }
+        
+        .navbar {
+            background: rgba(10, 25, 41, 0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+        
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: color 0.3s ease;
+        }
+        
+        .navbar-links a:hover {
+            color: var(--color-accent);
+        }
+        
+        /* Module selection styles */
+        .module-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .interest-section {
+            margin-bottom: 2rem;
+        }
+        
+        .module-option {
+            background: var(--glass-background);
+            border: var(--glass-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .module-option:hover {
+            background: var(--glass-background-accent);
+            box-shadow: var(--glass-glow);
+        }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .module-header h3 {
+            color: var(--color-accent);
+            margin: 0;
+        }
+        
+        .module-option p {
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+        
+        .module-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .module-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        .module-toggle input:checked + .toggle-slider {
+            background-color: var(--color-accent);
+        }
+        
+        .module-toggle input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        .interest-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .interest-title {
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+            max-width: 1200px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .loading-message {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="background-animation"></canvas>
+    <div class="cursor"></div>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">FinScholars</a>
+        <div class="navbar-links">
+            <a href="index.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="dashboard.html" class="dashboard-link">Dashboard</a>
+            <a href="#" id="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="profile-header">
+            <h1>Your Profile</h1>
+            <p>Customize your financial learning journey</p>
+        </div>
+        
+        <div id="alert-container" class="alert"></div>
+        
+        <div class="card">
+            <h2>Financial Interests</h2>
+            <p>Select the financial topics you're interested in learning about:</p>
+            
+            <div class="interests-container">
+                <label class="interest-option">
+                    <input type="checkbox" name="interests" value="budgeting"> Budgeting
+                </label>
+                <label class="interest-option">
+                    <input type="checkbox" name="interests" value="investing"> Investing
+                </label>
+                <label class="interest-option">
+                    <input type="checkbox" name="interests" value="retirement-planning"> Retirement Planning
+                </label>
+                <label class="interest-option">
+                    <input type="checkbox" name="interests" value="credit-management"> Credit Management
+                </label>
+                <label class="interest-option">
+                    <input type="checkbox" name="interests" value="taxes"> Taxes
+                </label>
+                <label class="interest-option">
+                    <input type="checkbox" name="interests" value="real-estate"> Real Estate
+                </label>
+            </div>
+            
+            <div class="btn-container">
+                <button id="update-interests-btn" class="btn">Update Interests</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Your Learning Modules</h2>
+            <p>Based on your selected interests, these modules are available for you:</p>
+            
+            <div id="topic-based-modules" class="module-selection">
+                <!-- Modules will be dynamically loaded here based on selected topics -->
+                <div class="loading-message">Please select your interests to see available modules</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is authenticated using localStorage
+            const user = JSON.parse(localStorage.getItem('user') || 'null');
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Load user's interests from localStorage
+            const userInterests = JSON.parse(localStorage.getItem('userInterests') || '[]');
+            
+            // Mark checkboxes for existing interests
+            if (userInterests.length > 0) {
+                const checkboxes = document.querySelectorAll('input[name="interests"]');
+                checkboxes.forEach(checkbox => {
+                    if (userInterests.includes(checkbox.value)) {
+                        checkbox.checked = true;
+                        checkbox.closest('.interest-option').classList.add('selected');
+                    }
+                });
+            }
+            
+            // Add event listeners to checkboxes for styling
+            const interestOptions = document.querySelectorAll('.interest-option');
+            interestOptions.forEach(option => {
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
+                });
+            });
+            
+            // Load user's selected modules from localStorage
+            const selectedModules = JSON.parse(localStorage.getItem('selectedModules') || '[]');
+            const moduleCheckboxes = document.querySelectorAll('input[name="modules"]');
+            moduleCheckboxes.forEach(checkbox => {
+                // Get the module title from the h3 element in the same module-option
+                const moduleTitle = checkbox.closest('.module-option').querySelector('h3').textContent.trim();
+                if (selectedModules.includes(moduleTitle)) {
+                    checkbox.checked = true;
+                }
+            });
+            
+            // Handle interest update
+            document.getElementById('update-interests-btn').addEventListener('click', function() {
+                const selectedInterests = [];
+                document.querySelectorAll('input[name="interests"]:checked').forEach(checkbox => {
+                    selectedInterests.push(checkbox.value);
+                });
+                
+                // Validate at least one interest is selected
+                if (selectedInterests.length === 0) {
+                    showAlert('Please select at least one interest.', 'danger');
+                    return;
+                }
+                
+                try {
+                    // Save to localStorage
+                    localStorage.setItem('userInterests', JSON.stringify(selectedInterests));
+                    showAlert('Your interests have been updated successfully!', 'success');
+                } catch (error) {
+                    console.error('Error updating interests:', error);
+                    showAlert('Error updating interests: ' + error, 'danger');
+                }
+            });
+            
+            // Define modules for each topic
+            const topicModules = {
+                'budgeting': [
+                    { title: 'Budgeting Basics', description: 'Learn the fundamentals of creating and maintaining a budget.' },
+                    { title: 'Expense Tracking', description: 'Master techniques for tracking and categorizing your expenses.' },
+                    { title: 'Saving Strategies', description: 'Discover effective strategies to increase your savings rate.' }
+                ],
+                'investing': [
+                    { title: 'Investment Fundamentals', description: 'Understand the basics of investing and different asset classes.' },
+                    { title: 'Stock Market Basics', description: 'Learn how the stock market works and how to start investing.' },
+                    { title: 'Portfolio Diversification', description: 'Strategies for building a diversified investment portfolio.' }
+                ],
+                'retirement-planning': [
+                    { title: 'Retirement Accounts', description: 'Understand different retirement account options and their benefits.' },
+                    { title: 'Retirement Calculators', description: 'Learn to calculate how much you need to save for retirement.' },
+                    { title: 'Social Security Planning', description: 'Maximize your social security benefits in retirement.' }
+                ],
+                'credit-management': [
+                    { title: 'Credit Score Improvement', description: 'Strategies to build and improve your credit score.' },
+                    { title: 'Debt Management', description: 'Effective techniques for managing and reducing debt.' },
+                    { title: 'Credit Card Strategies', description: 'Using credit cards responsibly to build credit and earn rewards.' }
+                ],
+                'taxes': [
+                    { title: 'Tax Basics', description: 'Understanding different types of taxes and how they affect you.' },
+                    { title: 'Tax-Efficient Investing', description: 'Strategies to minimize taxes on your investments.' },
+                    { title: 'Tax Deductions', description: 'Maximizing deductions to reduce your tax burden.' }
+                ],
+                'real-estate': [
+                    { title: 'Real Estate Fundamentals', description: 'Understanding real estate as an investment asset class.' },
+                    { title: 'Property Analysis', description: 'How to analyze and evaluate potential real estate investments.' },
+                    { title: 'Rental Property Management', description: 'Managing rental properties for maximum returns.' }
+                ]
+            };
+            
+            // Function to update modules based on selected interests
+            function updateModulesDisplay() {
+                const selectedInterests = [];
+                document.querySelectorAll('input[name="interests"]:checked').forEach(checkbox => {
+                    selectedInterests.push(checkbox.value);
+                });
+                
+                const modulesContainer = document.getElementById('topic-based-modules');
+                
+                // Clear current content
+                modulesContainer.innerHTML = '';
+                
+                if (selectedInterests.length === 0) {
+                    modulesContainer.innerHTML = '<div class="loading-message">Please select your interests to see available modules</div>';
+                    return;
+                }
+                
+                // Add modules for each selected interest
+                selectedInterests.forEach(interest => {
+                    if (topicModules[interest]) {
+                        const modules = topicModules[interest];
+                        
+                        // Create a section for this interest
+                        const interestSection = document.createElement('div');
+                        interestSection.className = 'interest-section';
+                        
+                        const interestTitle = document.createElement('h3');
+                        interestTitle.className = 'interest-title';
+                        interestTitle.textContent = interest.charAt(0).toUpperCase() + interest.slice(1).replace('-', ' ');
+                        interestSection.appendChild(interestTitle);
+                        
+                        // Add each module
+                        modules.forEach(module => {
+                            const moduleDiv = document.createElement('div');
+                            moduleDiv.className = 'module-option';
+                            
+                            const moduleHeader = document.createElement('div');
+                            moduleHeader.className = 'module-header';
+                            
+                            const moduleTitle = document.createElement('h3');
+                            moduleTitle.textContent = module.title;
+                            moduleHeader.appendChild(moduleTitle);
+                            
+                            moduleDiv.appendChild(moduleHeader);
+                            
+                            const moduleDesc = document.createElement('p');
+                            moduleDesc.textContent = module.description;
+                            moduleDiv.appendChild(moduleDesc);
+                            
+                            interestSection.appendChild(moduleDiv);
+                        });
+                        
+                        modulesContainer.appendChild(interestSection);
+                    }
+                });
+                
+                // Save selected interests to localStorage
+                localStorage.setItem('userInterests', JSON.stringify(selectedInterests));
+                
+                // Also save all modules from selected interests to selectedModules
+                const allModules = [];
+                
+                // Generate additional modules for interests that don't have predefined modules
+                const generatedModules = {};
+                
+                selectedInterests.forEach(interest => {
+                    if (topicModules[interest]) {
+                        topicModules[interest].forEach(module => {
+                            allModules.push(module.title);
+                        });
+                    } else {
+                        // Generate new modules for this interest
+                        const newModules = generateModulesForInterest(interest);
+                        generatedModules[interest] = newModules;
+                        
+                        // Add the generated module titles to allModules
+                        newModules.forEach(module => {
+                            allModules.push(module.title);
+                        });
+                    }
+                });
+                
+                // Save both selected modules and generated modules to localStorage
+                localStorage.setItem('selectedModules', JSON.stringify(allModules));
+                localStorage.setItem('generatedModules', JSON.stringify(generatedModules));
+                console.log("Saved generated modules to localStorage:", generatedModules);
+                
+                // Force a clear of any cached module data
+                localStorage.removeItem('cachedModuleData');
+            }
+            
+            // Update modules when interests are changed
+            document.querySelectorAll('input[name="interests"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateModulesDisplay();
+                });
+            });
+            
+            // Update modules when the update interests button is clicked
+            document.getElementById('update-interests-btn').addEventListener('click', function() {
+                updateModulesDisplay();
+                // Clear any cached module data to ensure fresh generation
+                localStorage.removeItem('cachedModuleData');
+                // Log the saved modules for debugging
+                const savedModules = localStorage.getItem('generatedModules');
+                console.log("Saved modules in localStorage:", savedModules);
+                // Clear any cached module data to ensure fresh generation
+                localStorage.removeItem('cachedModuleData');
+                
+                // Generate modules for each interest
+                const selectedInterests = JSON.parse(localStorage.getItem('userInterests') || '[]');
+                const generatedModules = {};
+                selectedInterests.forEach(interest => {
+                    generatedModules[interest] = generateModulesForInterest(interest);
+                });
+                
+                // Save generated modules to localStorage
+                localStorage.setItem('generatedModules', JSON.stringify(generatedModules));
+                console.log("Generated and saved modules:", generatedModules);
+                
+                // Force reload dashboard data on next visit
+                localStorage.setItem('dashboardDataTimestamp', Date.now());
+                
+                showAlert('Your interests and modules have been updated successfully!', 'success');
+            });
+            
+            // Initial load of modules based on saved interests
+            updateModulesDisplay();
+            
+            // Handle logout
+            document.getElementById('logout-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            });
+        });
+        
+
+        // Function to generate new modules for an interest
+        function generateModulesForInterest(interest) {
+            // Create modules based on the interest
+            const interestName = interest.charAt(0).toUpperCase() + interest.slice(1).replace('-', ' ');
+            
+            // Generate 2 modules for this interest
+            const modules = [
+                {
+                    title: `${interestName} Fundamentals`,
+                    description: `Learn the core concepts and principles of ${interestName.toLowerCase()}.`,
+                    content: generateModuleContent(interestName, 'fundamentals'),
+                    lessons: [
+                        { title: "Introduction", completed: false },
+                        { title: "Core Concepts", completed: false },
+                        { title: "Practical Applications", completed: false }
+                    ],
+                    quizzes: generateQuizzes(interestName, 'fundamentals'),
+                    isGenerated: true
+                },
+                {
+                    title: `Advanced ${interestName}`,
+                    description: `Deepen your understanding of ${interestName.toLowerCase()} with advanced topics and strategies.`,
+                    content: generateModuleContent(interestName, 'advanced'),
+                    lessons: [
+                        { title: "Advanced Strategies", completed: false },
+                        { title: "Case Studies", completed: false },
+                        { title: "Future Trends", completed: false }
+                    ],
+                    quizzes: generateQuizzes(interestName, 'advanced'),
+                    isGenerated: true
+                }
+            ];
+            
+            // Log the generated modules to console for debugging
+            console.log(`Generated modules for ${interestName}:`, modules);
+            
+            return modules;
+        }
+        
+        function generateModuleContent(interest, level) {
+            // Generate module content based on interest and level
+            const content = {
+              introduction: `Welcome to the ${level === 'fundamentals' ? 'Fundamentals' : 'Advanced'} of ${interest}!`,
+              sections: []
+            };
+            
+            // Generate different sections based on the interest and level
+            if (level === 'fundamentals') {
+              content.sections = [
+                {
+                  title: `Introduction to ${interest}`,
+                  text: `This section covers the basic concepts of ${interest}. You'll learn the fundamental principles and terminology that form the foundation of ${interest}.`,
+                  keyPoints: [
+                    `Understanding the core concepts of ${interest}`,
+                    `Learning the history and evolution of ${interest}`,
+                    `Exploring the importance of ${interest} in personal finance`
+                  ]
+                },
+                {
+                  title: `${interest} Basics`,
+                  text: `In this section, we'll explore the basic components of ${interest} and how they work together. You'll gain practical knowledge that you can apply immediately.`,
+                  keyPoints: [
+                    `Key components of ${interest}`,
+                    `How ${interest} affects your financial health`,
+                    `Common misconceptions about ${interest}`
+                  ]
+                },
+                {
+                  title: `Getting Started with ${interest}`,
+                  text: `This section provides practical steps to get started with ${interest}. You'll learn actionable strategies that you can implement right away.`,
+                  keyPoints: [
+                    `Step-by-step approach to ${interest}`,
+                    `Tools and resources for ${interest}`,
+                    `Setting realistic goals for ${interest}`
+                  ]
+                }
+              ];
+            } else {
+              content.sections = [
+                {
+                  title: `Advanced Concepts in ${interest}`,
+                  text: `This section delves into the more complex aspects of ${interest}. You'll explore advanced theories and strategies that professionals use.`,
+                  keyPoints: [
+                    `Complex strategies in ${interest}`,
+                    `Advanced analysis techniques for ${interest}`,
+                    `Professional approaches to ${interest}`
+                  ]
+                },
+                {
+                  title: `${interest} in Different Contexts`,
+                  text: `Here we examine how ${interest} applies in various contexts and situations. You'll learn to adapt your knowledge to different scenarios.`,
+                  keyPoints: [
+                    `Applying ${interest} in different financial situations`,
+                    `How ${interest} varies across different markets`,
+                    `Adapting ${interest} strategies to changing conditions`
+                  ]
+                },
+                {
+                  title: `Mastering ${interest}`,
+                  text: `This final section focuses on mastering ${interest} through case studies and real-world applications. You'll synthesize everything you've learned.`,
+                  keyPoints: [
+                    `Case studies in successful ${interest} implementation`,
+                    `Common pitfalls to avoid in ${interest}`,
+                    `Future trends in ${interest}`
+                  ]
+                }
+              ];
+            }
+            
+            return content;
+        }
+        
+        function generateQuizzes(interest, level) {
+            // Generate quizzes based on interest and level
+            const quizzes = [];
+            const questionCount = level === 'fundamentals' ? 5 : 7;
+            
+            // Create a quiz for each module
+            const quiz = {
+              title: `${level === 'fundamentals' ? 'Fundamentals' : 'Advanced'} ${interest} Quiz`,
+              description: `Test your knowledge of ${level === 'fundamentals' ? 'basic' : 'advanced'} concepts in ${interest}.`,
+              questions: []
+            };
+            
+            // Generate questions based on the interest and level
+            for (let i = 1; i <= questionCount; i++) {
+              let question, options, correctAnswer;
+              
+              if (level === 'fundamentals') {
+                switch (i) {
+                  case 1:
+                    question = `What is the primary purpose of ${interest}?`;
+                    options = [
+                      `To increase short-term gains`,
+                      `To establish a solid financial foundation`,
+                      `To minimize all financial risks`,
+                      `To maximize tax benefits`
+                    ];
+                    correctAnswer = 1; // 0-indexed, so 1 is the second option
+                    break;
+                  case 2:
+                    question = `Which of the following is NOT a key principle of ${interest}?`;
+                    options = [
+                      `Consistency`,
+                      `Diversification`,
+                      `Immediate results`,
+                      `Long-term planning`
+                    ];
+                    correctAnswer = 2;
+                    break;
+                  case 3:
+                    question = `How often should you review your ${interest} strategy?`;
+                    options = [
+                      `Daily`,
+                      `Weekly`,
+                      `Monthly`,
+                      `Annually`
+                    ];
+                    correctAnswer = 3;
+                    break;
+                  case 4:
+                    question = `What is a common misconception about ${interest}?`;
+                    options = [
+                      `It requires a lot of starting capital`,
+                      `It's only for financial experts`,
+                      `It's too complicated for beginners`,
+                      `All of the above`
+                    ];
+                    correctAnswer = 3;
+                    break;
+                  case 5:
+                    question = `Which tool is most useful for beginners in ${interest}?`;
+                    options = [
+                      `Complex financial models`,
+                      `Basic tracking spreadsheets`,
+                      `Advanced market analysis software`,
+                      `Algorithmic trading platforms`
+                    ];
+                    correctAnswer = 1;
+                    break;
+                }
+              } else {
+                switch (i) {
+                  case 1:
+                    question = `Which advanced strategy is most effective for ${interest} in volatile markets?`;
+                    options = [
+                      `Aggressive growth`,
+                      `Defensive positioning`,
+                      `Market timing`,
+                      `Sector rotation`
+                    ];
+                    correctAnswer = 1;
+                    break;
+                  case 2:
+                    question = `What analysis technique provides the most insight for long-term ${interest} decisions?`;
+                    options = [
+                      `Technical analysis`,
+                      `Fundamental analysis`,
+                      `Sentiment analysis`,
+                      `Quantitative analysis`
+                    ];
+                    correctAnswer = 1;
+                    break;
+                  case 3:
+                    question = `How do professional ${interest} managers typically respond to economic downturns?`;
+                    options = [
+                      `Liquidate all positions`,
+                      `Increase risk exposure`,
+                      `Rebalance portfolios`,
+                      `Pause all activity`
+                    ];
+                    correctAnswer = 2;
+                    break;
+                  case 4:
+                    question = `Which factor has the greatest impact on successful ${interest} outcomes?`;
+                    options = [
+                      `Market timing`,
+                      `Security selection`,
+                      `Consistent strategy`,
+                      `Fee minimization`
+                    ];
+                    correctAnswer = 2;
+                    break;
+                  case 5:
+                    question = `What is the most common pitfall in advanced ${interest}?`;
+                    options = [
+                      `Overconfidence`,
+                      `Insufficient research`,
+                      `Following the crowd`,
+                      `All of the above`
+                    ];
+                    correctAnswer = 3;
+                    break;
+                  case 6:
+                    question = `How should ${interest} strategies be modified during periods of high inflation?`;
+                    options = [
+                      `Focus on growth assets`,
+                      `Increase cash holdings`,
+                      `Invest in inflation-protected securities`,
+                      `Avoid all market exposure`
+                    ];
+                    correctAnswer = 2;
+                    break;
+                  case 7:
+                    question = `Which approach to ${interest} typically yields the most consistent results?`;
+                    options = [
+                      `Aggressive trading`,
+                      `Passive investing`,
+                      `Market timing`,
+                      `Sector concentration`
+                    ];
+                    correctAnswer = 1;
+                    break;
+                }
+              }
+              
+              quiz.questions.push({
+                question: question,
+                options: options,
+                correctAnswer: correctAnswer
+              });
+            }
+            
+            quizzes.push(quiz);
+            return quizzes;
+        }
+
+        // Helper function to show alerts
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.textContent = message;
+            alertContainer.className = `alert alert-${type}`;
+            alertContainer.style.display = 'block';
+            
+            // Auto-hide success alerts after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertContainer.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+<script>
+  // Background animation
+  document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.querySelector('.background-animation');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    function createParticles() {
+      particles = [];
+      const particleCount = Math.floor(window.innerWidth / 20);
+      
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 2 + 1,
+          color: `rgba(75, 207, 234, ${Math.random() * 0.5 + 0.1})`,
+          velocity: {
+            x: (Math.random() - 0.5) * 0.5,
+            y: (Math.random() - 0.5) * 0.5
+          }
+        });
+      }
+    }
+    
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw particles
+      particles.forEach(particle => {
+        // Update position
+        particle.x += particle.velocity.x;
+        particle.y += particle.velocity.y;
+        
+        // Wrap around edges
+        if (particle.x < 0) particle.x = canvas.width;
+        if (particle.x > canvas.width) particle.x = 0;
+        if (particle.y < 0) particle.y = canvas.height;
+        if (particle.y > canvas.height) particle.y = 0;
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = particle.color;
+        ctx.fill();
+      });
+      
+      requestAnimationFrame(drawParticles);
+    }
+    
+    // Initialize animation
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      createParticles();
+    });
+    
+    resizeCanvas();
+    createParticles();
+    drawParticles();
+    
+    // Cursor animation
+    const cursor = document.querySelector('.cursor');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.display = 'block';
+      cursor.style.left = `${e.clientX}px`;
+      cursor.style.top = `${e.clientY}px`;
+    });
+    
+    document.addEventListener('mouseout', () => {
+      cursor.style.display = 'none';
+    });
+  });
+</script>
+</body>
+</html>

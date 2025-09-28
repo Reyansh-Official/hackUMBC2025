@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinScholars - Financial Education Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #4F46E5;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-2xl font-bold text-indigo-600">FinScholars</h1>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="#home" class="nav-link border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
+                        <a href="#dashboard" class="nav-link border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Dashboard</a>
+                        <a href="#modules" class="nav-link border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Modules</a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <div id="auth-buttons" class="flex space-x-4">
+                        <button id="login-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Log in
+                        </button>
+                        <button id="signup-btn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Sign up
+                        </button>
+                    </div>
+                    <div id="user-menu" class="hidden ml-3 relative">
+                        <div>
+                            <button id="user-menu-button" class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <span class="sr-only">Open user menu</span>
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100">
+                                    <span id="user-initials" class="text-sm font-medium leading-none text-indigo-700">JS</span>
+                                </span>
+                            </button>
+                        </div>
+                        <div id="user-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                            <a href="#profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Your Profile</a>
+                            <a href="#settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Settings</a>
+                            <button id="logout-btn" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sign out</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <section id="home-section" class="py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="lg:text-center">
+                    <h2 class="text-base text-indigo-600 font-semibold tracking-wide uppercase">FinScholars</h2>
+                    <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">Master Financial Literacy with AI</p>
+                    <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                        Personalized financial education modules tailored to your interests and learning style.
+                    </p>
+                </div>
+
+                <div class="mt-10">
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-8">
+                        <div class="md:w-1/2">
+                            <img src="https://images.unsplash.com/photo-1579621970795-87facc2f976d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Financial Education" class="rounded-lg shadow-md">
+                        </div>
+                        <div class="md:w-1/2 mt-6 md:mt-0">
+                            <h3 class="text-2xl font-bold text-gray-900">Why Choose FinScholars?</h3>
+                            <ul class="mt-4 space-y-4">
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="ml-3 text-base text-gray-700">AI-powered personalized learning modules</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="ml-3 text-base text-gray-700">Upload your syllabus for tailored content</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="ml-3 text-base text-gray-700">Interactive quizzes and progress tracking</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="ml-3 text-base text-gray-700">Comprehensive financial topics coverage</p>
+                                </li>
+                            </ul>
+                            <div class="mt-8">
+                                <button id="get-started-btn" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Get Started
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login-section" class="hidden py-12 bg-gray-50">
+            <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
+                    <h2 class="mb-6 text-2xl font-bold text-gray-900">Log in to your account</h2>
+                    <form id="login-form" class="space-y-6">
+                        <div>
+                            <label for="login-email" class="block text-sm font-medium text-gray-700">Email address</label>
+                            <div class="mt-1">
+                                <input id="login-email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <div class="mt-1">
+                                <input id="login-password" name="password" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                                    Remember me
+                                </label>
+                            </div>
+
+                            <div class="text-sm">
+                                <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Forgot your password?
+                                </a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Sign in
+                            </button>
+                        </div>
+                    </form>
+                    <div class="mt-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-2 bg-white text-gray-500">
+                                    Don't have an account?
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <button id="go-to-signup" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Sign up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Signup Section -->
+        <section id="signup-section" class="hidden py-12 bg-gray-50">
+            <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
+                    <h2 class="mb-6 text-2xl font-bold text-gray-900">Create your account</h2>
+                    <form id="signup-form" class="space-y-6">
+                        <div>
+                            <label for="signup-name" class="block text-sm font-medium text-gray-700">Full name</label>
+                            <div class="mt-1">
+                                <input id="signup-name" name="name" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="signup-email" class="block text-sm font-medium text-gray-700">Email address</label>
+                            <div class="mt-1">
+                                <input id="signup-email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <div class="mt-1">
+                                <input id="signup-password" name="password" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="signup-confirm-password" class="block text-sm font-medium text-gray-700">Confirm password</label>
+                            <div class="mt-1">
+                                <input id="signup-confirm-password" name="confirm-password" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input id="terms" name="terms" type="checkbox" required class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                            <label for="terms" class="ml-2 block text-sm text-gray-900">
+                                I agree to the <a href="#" class="text-indigo-600 hover:text-indigo-500">Terms of Service</a> and <a href="#" class="text-indigo-600 hover:text-indigo-500">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Sign up
+                            </button>
+                        </div>
+                    </form>
+                    <div class="mt-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-300"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-2 bg-white text-gray-500">
+                                    Already have an account?
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <button id="go-to-login" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Log in
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Onboarding Section -->
+        <section id="onboarding-section" class="hidden py-12 bg-gray-50">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
+                    <div class="mb-8">
+                        <div id="step-indicator" class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                                    <span class="text-white font-medium">1</span>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-medium text-gray-900">Welcome</h3>
+                                    <p class="text-sm text-gray-500">Tell us about your interests</p>
+                                </div>
+                            </div>
+                            <div class="hidden sm:flex items-center">
+                                <div class="h-0.5 w-16 bg-gray-200"></div>
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <span class="text-gray-500 font-medium">2</span>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-medium text-gray-500">Modules</h3>
+                                    <p class="text-sm text-gray-500">Customize your learning</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="onboarding-welcome" class="space-y-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Welcome to FinScholars!</h2>
+                            <p class="mt-2 text-gray-600">Let's personalize your learning experience. Select your financial interests or upload a syllabus to get started.</p>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Select your financial interests</h3>
+                            <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="interest-investing" name="interests" value="investing" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="interest-investing" class="font-medium text-gray-700">Investing</label>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="interest-budgeting" name="interests" value="budgeting" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="interest-budgeting" class="font-medium text-gray-700">Budgeting</label>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="interest-retirement" name="interests" value="retirement" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="interest-retirement" class="font-medium text-gray-700">Retirement</label>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="interest-taxes" name="interests" value="taxes" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="interest-taxes" class="font-medium text-gray-700">Taxes</label>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="interest-credit" name="interests" value="credit" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="interest-credit" class="font-medium text-gray-700">Credit</label>
+                                    </div>
+                                </div>
+                                <div class="relative flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="interest-insurance" name="interests" value="insurance" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="interest-insurance" class="font-medium text-gray-700">Insurance</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Or upload a syllabus</h3>
+                            <div class="mt-4">
+                                <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                    <div class="space-y-1 text-center">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <div class="flex text-sm text-gray-600">
+                                            <label for="syllabus-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                                <span>Upload a file</span>
+                                                <input id="syllabus-upload" name="syllabus-upload" type="file" class="sr-only">
+                                            </label>
+                                            <p class="pl-1">or drag and drop</p>
+                                        </div>
+                                        <p class="text-xs text-gray-500">
+                                            PDF, DOC, DOCX up to 10MB
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button id="onboarding-next" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Get Started
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900">Your Learning Dashboard</h2>
+                    <p class="mt-2 text-gray-600">Track your progress and continue learning</p>
+                </div>
+
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Overall Progress</h3>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:p-6">
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-4">
+                                <div class="bg-indigo-600 h-4 rounded-full" style="width: 45%"></div>
+                            </div>
+                            <div class="flex justify-between text-sm font-medium text-gray-500 mt-2">
+                                <div>45% Complete</div>
+                                <div>3 of 6 modules</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <!-- Module 1 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Investing Basics
+                                        </dt>
+                                        <dd>
+                                            <div class="text-lg font-medium text-gray-900">
+                                                100% Complete
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="#module/1" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Review Module
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 2 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Budgeting Strategies
+                                        </dt>
+                                        <dd>
+                                            <div class="text-lg font-medium text-gray-900">
+                                                75% Complete
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="#module/2" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Continue Learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 3 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Retirement Planning
+                                        </dt>
+                                        <dd>
+                                            <div class="text-lg font-medium text-gray-900">
+                                                50% Complete
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="#module/3" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Continue Learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 4 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-gray-400 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Tax Strategies
+                                        </dt>
+                                        <dd>
+                                            <div class="text-lg font-medium text-gray-900">
+                                                0% Complete
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="#module/4" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Start Learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 5 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-gray-400 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Credit Management
+                                        </dt>
+                                        <dd>
+                                            <div class="text-lg font-medium text-gray-900">
+                                                0% Complete
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="#module/5" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Start Learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Module 6 -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-gray-400 rounded-md p-3">
+                                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">
+                                            Insurance Basics
+                                        </dt>
+                                        <dd>
+                                            <div class="text-lg font-medium text-gray-900">
+                                                0% Complete
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-5 py-3">
+                            <div class="text-sm">
+                                <a href="#module/6" class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    Start Learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Section -->
+        <section id="module-section" class="hidden py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <h2 id="module-title" class="text-2xl font-bold text-gray-900">Investing Basics</h2>
+                    <p id="module-description" class="mt-2 text-gray-600">Learn the fundamentals of investing and building wealth</p>
+                </div>
+
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Module Progress</h3>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:p-6">
+                        <div class="mt-2">
+                            <div class="bg-gray-200 rounded-full h-4">
+                                <div id="module-progress-bar" class="bg-indigo-600 h-4 rounded-full" style="width: 100%"></div>
+                            </div>
+                            <div class="flex justify-between text-sm font-medium text-gray-500 mt-2">
+                                <div id="module-progress-text">100% Complete</div>
+                                <div id="module-lessons-complete">5 of 5 lessons</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Lessons</h3>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <ul role="list" class="divide-y divide-gray-200">
+                            <li>
+                                <div class="px-4 py-4 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="ml-4 text-sm font-medium text-indigo-600 truncate">Lesson 1: Introduction to Investing</p>
+                                        </div>
+                                        <div class="ml-2 flex-shrink-0 flex">
+                                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="px-4 py-4 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="ml-4 text-sm font-medium text-indigo-600 truncate">Lesson 2: Types of Investments</p>
+                                        </div>
+                                        <div class="ml-2 flex-shrink-0 flex">
+                                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="px-4 py-4 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="ml-4 text-sm font-medium text-indigo-600 truncate">Lesson 3: Risk and Return</p>
+                                        </div>
+                                        <div class="ml-2 flex-shrink-0 flex">
+                                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="px-4 py-4 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="ml-4 text-sm font-medium text-indigo-600 truncate">Lesson 4: Building a Portfolio</p>
+                                        </div>
+                                        <div class="ml-2 flex-shrink-0 flex">
+                                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="px-4 py-4 sm:px-6">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="ml-4 text-sm font-medium text-indigo-600 truncate">Lesson 5: Investment Strategies</p>
+                                        </div>
+                                        <div class="ml-2 flex-shrink-0 flex">
+                                            <p class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <button id="back-to-dashboard" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
+            <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        About
+                    </a>
+                </div>
+
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        Blog
+                    </a>
+                </div>
+
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        Jobs
+                    </a>
+                </div>
+
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        Press
+                    </a>
+                </div>
+
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        Privacy
+                    </a>
+                </div>
+
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        Terms
+                    </a>
+                </div>
+
+                <div class="px-5 py-2">
+                    <a href="#" class="text-base text-gray-500 hover:text-gray-900">
+                        Contact
+                    </a>
+                </div>
+            </nav>
+            <p class="mt-8 text-center text-base text-gray-400">
+                &copy; 2023 FinScholars, Inc. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mock user data
+        let currentUser = null;
+        const mockUser = {
+            id: '123',
+            name: 'John Smith',
+            email: 'john@example.com',
+            interests: ['investing', 'budgeting', 'retirement'],
+            modules: [
+                { id: 1, title: 'Investing Basics', progress: 100, lessons: 5, lessonsCompleted: 5 },
+                { id: 2, title: 'Budgeting Strategies', progress: 75, lessons: 4, lessonsCompleted: 3 },
+                { id: 3, title: 'Retirement Planning', progress: 50, lessons: 6, lessonsCompleted: 3 },
+                { id: 4, title: 'Tax Strategies', progress: 0, lessons: 5, lessonsCompleted: 0 },
+                { id: 5, title: 'Credit Management', progress: 0, lessons: 4, lessonsCompleted: 0 },
+                { id: 6, title: 'Insurance Basics', progress: 0, lessons: 3, lessonsCompleted: 0 }
+            ]
+        };
+
+        // DOM Elements
+        const sections = {
+            home: document.getElementById('home-section'),
+            login: document.getElementById('login-section'),
+            signup: document.getElementById('signup-section'),
+            onboarding: document.getElementById('onboarding-section'),
+            dashboard: document.getElementById('dashboard-section'),
+            module: document.getElementById('module-section')
+        };
+
+        const authButtons = document.getElementById('auth-buttons');
+        const userMenu = document.getElementById('user-menu');
+        const userDropdown = document.getElementById('user-dropdown');
+        const userInitials = document.getElementById('user-initials');
+
+        // Navigation
+        function showSection(sectionId) {
+            Object.keys(sections).forEach(key => {
+                sections[key].classList.add('hidden');
+            });
+            sections[sectionId].classList.remove('hidden');
+        }
+
+        // Initial section
+        showSection('home');
+
+        // Event Listeners
+        document.getElementById('login-btn').addEventListener('click', () => showSection('login'));
+        document.getElementById('signup-btn').addEventListener('click', () => showSection('signup'));
+        document.getElementById('get-started-btn').addEventListener('click', () => {
+            if (currentUser) {
+                showSection('dashboard');
+            } else {
+                showSection('signup');
+            }
+        });
+
+        document.getElementById('go-to-signup').addEventListener('click', () => showSection('signup'));
+        document.getElementById('go-to-login').addEventListener('click', () => showSection('login'));
+
+        document.getElementById('back-to-dashboard').addEventListener('click', () => showSection('dashboard'));
+
+        // User menu toggle
+        document.getElementById('user-menu-button').addEventListener('click', () => {
+            userDropdown.classList.toggle('hidden');
+        });
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Mock login - in a real app, this would call the backend API
+            if (email && password) {
+                currentUser = mockUser;
+                updateAuthUI();
+                showSection('dashboard');
+            }
+        });
+
+        // Signup form submission
+        document.getElementById('signup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            
+            // Mock signup - in a real app, this would call the backend API
+            if (name && email && password && password === confirmPassword) {
+                // Create a new user without modules or interests
+                currentUser = {
+                    id: '123',
+                    name: name,
+                    email: email,
+                    interests: [],
+                    modules: []
+                };
+                updateAuthUI();
+                showSection('onboarding');
+            }
+        });
+
+        // Onboarding form submission
+        document.getElementById('onboarding-next').addEventListener('click', () => {
+            // Get selected interests
+            const interestCheckboxes = document.querySelectorAll('input[name="interests"]:checked');
+            const selectedInterests = Array.from(interestCheckboxes).map(cb => cb.value);
+            
+            // Get syllabus file (if any)
+            const syllabusFile = document.getElementById('syllabus-upload').files[0];
+            
+            if (selectedInterests.length > 0 || syllabusFile) {
+                // Update user interests
+                currentUser.interests = selectedInterests;
+                
+                // Generate modules based on interests
+                if (selectedInterests.includes('investing')) {
+                    currentUser.modules.push(mockUser.modules[0]);
+                }
+                if (selectedInterests.includes('budgeting')) {
+                    currentUser.modules.push(mockUser.modules[1]);
+                }
+                if (selectedInterests.includes('retirement')) {
+                    currentUser.modules.push(mockUser.modules[2]);
+                }
+                if (selectedInterests.includes('taxes')) {
+                    currentUser.modules.push(mockUser.modules[3]);
+                }
+                if (selectedInterests.includes('credit')) {
+                    currentUser.modules.push(mockUser.modules[4]);
+                }
+                if (selectedInterests.includes('insurance')) {
+                    currentUser.modules.push(mockUser.modules[5]);
+                }
+                
+                // If syllabus was uploaded, we would process it here
+                // In a real app, this would call the backend API
+                
+                showSection('dashboard');
+            }
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            currentUser = null;
+            updateAuthUI();
+            showSection('home');
+        });
+
+        // Update UI based on authentication state
+        function updateAuthUI() {
+            if (currentUser) {
+                authButtons.classList.add('hidden');
+                userMenu.classList.remove('hidden');
+                userInitials.textContent = getInitials(currentUser.name);
+            } else {
+                authButtons.classList.remove('hidden');
+                userMenu.classList.add('hidden');
+            }
+        }
+
+        // Helper function to get initials from name
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(part => part.charAt(0))
+                .join('')
+                .toUpperCase();
+        }
+
+        // Module navigation
+        document.querySelectorAll('a[href^="#module/"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const moduleId = parseInt(e.target.getAttribute('href').split('/')[1]);
+                showModuleDetails(moduleId);
+            });
+        });
+
+        // Show module details
+        function showModuleDetails(moduleId) {
+            if (!currentUser) return;
+            
+            const module = currentUser.modules.find(m => m.id === moduleId);
+            if (!module) return;
+            
+            document.getElementById('module-title').textContent = module.title;
+            document.getElementById('module-progress-bar').style.width = `${module.progress}%`;
+            document.getElementById('module-progress-text').textContent = `${module.progress}% Complete`;
+            document.getElementById('module-lessons-complete').textContent = `${module.lessonsCompleted} of ${module.lessons} lessons`;
+            
+            showSection('module');
+        }
+    </script>
+</body>
+</html>

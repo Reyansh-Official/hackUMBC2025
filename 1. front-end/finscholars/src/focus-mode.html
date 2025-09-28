@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Mode - FinScholars</title>
+    <style>
+        :root {
+            --primary-color: #00BFFF;
+            --secondary-color: #87CEFA;
+            --background-dark: #121212;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #ffffff;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        /* Focus Toggle Styles */
+        .focus-toggle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .toggle-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-label.active {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.7);
+        }
+        
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 3px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .toggle-switch:hover {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3), inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toggle-switch.active {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .toggle-switch.active:hover {
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.9), inset 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .toggle-button {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(to bottom right, #f0f0f0, #d0d0d0);
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .toggle-switch.active .toggle-button {
+            left: calc(100% - 27px);
+            background: linear-gradient(to bottom right, #ffffff, #e0f7ff);
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #aaaaaa;
+            opacity: 0.9;
+            text-align: center;
+            max-width: 250px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-message.active {
+            color: var(--primary-color);
+        }
+        
+        .focus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 191, 255, 0.05);
+            pointer-events: none;
+            z-index: 1000;
+            border: 8px solid rgba(0, 191, 255, 0.3);
+            box-shadow: inset 0 0 30px rgba(0, 191, 255, 0.3);
+            backdrop-filter: saturate(1.2);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .focus-overlay.active {
+            opacity: 1;
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .task-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        
+        .task-name {
+            opacity: 0.9;
+        }
+        
+        .task-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 10px;
+            background-color: rgba(0, 191, 255, 0.2);
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">FinScholars</div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link">Modules</a>
+                <a href="#" class="nav-link">Profile</a>
+            </nav>
+        </header>
+        
+        <div class="card">
+            <h2 class="card-title">Focus Mode</h2>
+            <p>Activate Focus Mode to block distracting websites and applications while you study.</p>
+            
+            <div class="focus-toggle-container">
+                <div class="toggle-label">Focus Mode</div>
+                <div class="toggle-switch" id="focusToggle">
+                    <div class="toggle-button"></div>
+                </div>
+                <div class="status-message" id="statusMessage">Focus Mode is inactive</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="card">
+                <h2 class="card-title">Current Tasks</h2>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <span class="task-name">Complete Financial Literacy Module</span>
+                        <span class="task-status">In Progress</span>
+                    </li>
+                    <li class="task-item">
+                        <span class="task-name">Take Investment Quiz</span>
+                        <span class="task-status">Pending</span>
+                    </li>
+                    <li class="task-item">
+                        <span class="task-name">Review Budget Worksheet</span>
+                        <span class="task-status">Pending</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">Focus Statistics</h2>
+                <p>Track your focus sessions and productivity over time.</p>
+                <div style="height: 150px; background: rgba(0, 191, 255, 0.1); border-radius: 5px; display: flex; justify-content: center; align-items: center;">
+                    Focus statistics will appear here
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="focus-overlay" id="focusOverlay"></div>
+    
+    <script>
+        // DOM Elements
+        const focusToggle = document.getElementById('focusToggle');
+        const toggleButton = focusToggle.querySelector('.toggle-button');
+        const toggleLabel = document.querySelector('.toggle-label');
+        const statusMessage = document.getElementById('statusMessage');
+        const focusOverlay = document.getElementById('focusOverlay');
+        
+        // State
+        let isActive = false;
+        let isLoading = false;
+        
+        // Toggle Focus Mode
+        focusToggle.addEventListener('click', async () => {
+            if (isLoading) return;
+            
+            isLoading = true;
+            toggleButton.style.animation = 'pulse 0.5s infinite alternate';
+            
+            try {
+                // Simulate API call
+                await mockApiCall();
+                
+                // Toggle state
+                isActive = !isActive;
+                
+                // Update UI
+                updateUI();
+                
+            } catch (error) {
+                console.error('Error toggling focus mode:', error);
+            } finally {
+                isLoading = false;
+                toggleButton.style.animation = '';
+            }
+        });
+        
+        // Mock API call
+        function mockApiCall() {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log(isActive ? 'Ending focus session' : 'Starting focus session');
+                    resolve({ status: 200 });
+                }, 800);
+            });
+        }
+        
+        // Update UI based on state
+        function updateUI() {
+            // Toggle switch
+            if (isActive) {
+                focusToggle.classList.add('active');
+                toggleLabel.classList.add('active');
+                toggleLabel.textContent = 'Focus Mode Active';
+                statusMessage.classList.add('active');
+                statusMessage.textContent = 'Focus Mode activated. Distractions blocked.';
+                focusOverlay.classList.add('active');
+            } else {
+                focusToggle.classList.remove('active');
+                toggleLabel.classList.remove('active');
+                toggleLabel.textContent = 'Focus Mode';
+                statusMessage.classList.remove('active');
+                statusMessage.textContent = 'Focus Mode is inactive';
+                focusOverlay.classList.remove('active');
+            }
+        }
+        
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                100% { transform: scale(0.9); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

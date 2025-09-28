@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinScholars - Module View</title>
+    <style>
+        :root {
+            --color-primary: #0a192f;
+            --color-secondary: #172a45;
+            --color-accent: #4bcfea;
+            --color-text: #e6f1ff;
+            --color-success: #00e676;
+            --color-error: #ff4c4c;
+            --glass-background: rgba(23, 42, 69, 0.7);
+            --glass-background-accent: rgba(23, 42, 69, 0.85);
+            --glass-border: 1px solid rgba(75, 207, 234, 0.3);
+            --glass-glow: 0 0 20px rgba(75, 207, 234, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+            color: var(--color-text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--color-accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--color-accent);
+        }
+
+        .module-container {
+            background: var(--glass-background);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-glow);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+            opacity: 0.7;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .module-title {
+            font-size: 2rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-description {
+            color: rgba(230, 241, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .level-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .level-button {
+            background: var(--glass-background-accent);
+            color: var(--color-text);
+            border: var(--glass-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(75, 207, 234, 0.1), transparent);
+            z-index: -1;
+        }
+
+        .level-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(75, 207, 234, 0.2);
+        }
+
+        .level-button.active {
+            background: rgba(75, 207, 234, 0.2);
+            border-color: var(--color-accent);
+            box-shadow: 0 0 15px rgba(75, 207, 234, 0.3);
+        }
+
+        .level-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .content-section {
+            background: var(--glass-background);
+            backdrop-filter: blur(8px);
+            border: var(--glass-border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .content-section:hover {
+            box-shadow: var(--glass-glow);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(75, 207, 234, 0.2);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-content {
+            line-height: 1.6;
+        }
+
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-button {
+            background: linear-gradient(135deg, rgba(75, 207, 234, 0.8), rgba(75, 207, 234, 0.6));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 2rem auto;
+            box-shadow: 0 5px 15px rgba(75, 207, 234, 0.2);
+        }
+
+        .quiz-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(75, 207, 234, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--glass-background);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-glow);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: var(--color-accent);
+        }
+
+        .quiz-title {
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .quiz-question {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option-button {
+            background: var(--glass-background-accent);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(75, 207, 234, 0.3);
+            box-shadow: 0 0 10px rgba(75, 207, 234, 0.2);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            width: 100%;
+            text-align: left;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(75, 207, 234, 0.4);
+            border-color: rgba(75, 207, 234, 0.6);
+        }
+
+        .option-button.selected {
+            border-color: var(--color-accent);
+        }
+
+        .option-button.correct {
+            border-color: var(--color-success);
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.5);
+        }
+
+        .option-button.incorrect {
+            border-color: var(--color-error);
+            box-shadow: 0 0 15px rgba(255, 76, 76, 0.5);
+        }
+
+        .feedback-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid var(--color-success);
+            color: white;
+            display: none;
+        }
+
+        .feedback-message.incorrect {
+            background: rgba(255, 76, 76, 0.1);
+            border: 1px solid var(--color-error);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .button {
+            background: var(--glass-background-accent);
+            color: var(--color-text);
+            border: var(--glass-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .button.primary {
+            background: linear-gradient(135deg, rgba(75, 207, 234, 0.8), rgba(75, 207, 234, 0.6));
+            border: none;
+        }
+
+        .button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(75, 207, 234, 0.2);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-card {
+            text-align: center;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .result-score {
+            font-size: 4rem;
+            color: var(--color-accent);
+            margin: 2rem 0;
+            text-shadow: 0 0 10px rgba(75, 207, 234, 0.5);
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        /* Animation for liquid glass effect */
+        @keyframes flow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .module-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                rgba(75, 207, 234, 0) 0%, 
+                rgba(75, 207, 234, 0.03) 25%, 
+                rgba(75, 207, 234, 0.05) 50%, 
+                rgba(75, 207, 234, 0.03) 75%, 
+                rgba(75, 207, 234, 0) 100%);
+            z-index: -1;
+            animation: flow 15s linear infinite;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">FinScholars</div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">Dashboard</a>
+            <a href="#" class="nav-link">Modules</a>
+            <a href="#" class="nav-link">Profile</a>
+            <a href="#" class="nav-link">Settings</a>
+        </div>
+    </div>
+
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 class="module-title">Investment Basics</h1>
+                <p class="module-description">Learn the fundamentals of investing and build a strong foundation for your financial future.</p>
+            </div>
+        </div>
+
+        <div class="level-buttons">
+            <button class="level-button active" data-level="basic">Basic</button>
+            <button class="level-button" data-level="moderate" disabled>Moderate</button>
+            <button class="level-button" data-level="advanced" disabled>Advanced</button>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">Introduction to Investing</h2>
+            <div class="section-content">
+                <p>Investing is the act of allocating resources, usually money, with the expectation of generating an income or profit. It can include purchasing financial assets such as stocks, bonds, mutual funds, or real estate.</p>
+                <p>The primary goal of investing is to put your money to work to potentially grow your wealth over time. Unlike saving, which focuses on preserving your money, investing aims to increase your money's value by earning returns.</p>
+                <p>Key concepts to understand about investing include:</p>
+                <ul>
+                    <li><strong>Risk and Return:</strong> Generally, investments with higher potential returns come with higher risks.</li>
+                    <li><strong>Diversification:</strong> Spreading investments across various asset classes to reduce risk.</li>
+                    <li><strong>Compound Interest:</strong> The process where the interest you earn also earns interest over time.</li>
+                    <li><strong>Time Horizon:</strong> The length of time you expect to hold an investment before needing the money.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">Types of Investments</h2>
+            <div class="section-content">
+                <p>There are many different types of investments available, each with its own characteristics, risk levels, and potential returns:</p>
+                <ul>
+                    <li><strong>Stocks:</strong> Represent ownership in a company. When you buy a stock, you're purchasing a small piece of that company.</li>
+                    <li><strong>Bonds:</strong> Essentially loans that investors make to corporations or governments. The borrower promises to pay back the loan with interest.</li>
+                    <li><strong>Mutual Funds:</strong> Pools of money from many investors used to purchase a diversified portfolio of stocks, bonds, or other securities.</li>
+                    <li><strong>Exchange-Traded Funds (ETFs):</strong> Similar to mutual funds but traded on stock exchanges like individual stocks.</li>
+                    <li><strong>Real Estate:</strong> Physical property or investments in property through REITs (Real Estate Investment Trusts).</li>
+                    <li><strong>Certificates of Deposit (CDs):</strong> Time deposits offered by banks with fixed terms and interest rates.</li>
+                </ul>
+                <p>Understanding these different investment types is crucial for building a well-rounded portfolio that aligns with your financial goals and risk tolerance.</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">Getting Started with Investing</h2>
+            <div class="section-content">
+                <p>Before you begin investing, it's important to establish a solid financial foundation:</p>
+                <ol>
+                    <li><strong>Set Clear Financial Goals:</strong> Define what you're investing for (retirement, education, home purchase) and your time horizon.</li>
+                    <li><strong>Build an Emergency Fund:</strong> Have 3-6 months of living expenses saved before investing significantly.</li>
+                    <li><strong>Pay Off High-Interest Debt:</strong> Eliminate credit card debt and other high-interest loans first.</li>
+                    <li><strong>Understand Your Risk Tolerance:</strong> Assess how much volatility you can handle emotionally and financially.</li>
+                    <li><strong>Research Investment Options:</strong> Learn about different investment vehicles and strategies.</li>
+                    <li><strong>Start Small:</strong> Begin with small amounts to get comfortable with the process.</li>
+                    <li><strong>Consider Tax-Advantaged Accounts:</strong> Utilize retirement accounts like 401(k)s and IRAs for tax benefits.</li>
+                </ol>
+                <p>Remember that investing is a long-term journey. Consistency, patience, and continuous learning are key to successful investing.</p>
+            </div>
+        </div>
+
+        <button class="quiz-button" id="take-quiz-btn">Take Quiz</button>
+    </div>
+
+    <div class="modal-overlay" id="quiz-modal">
+        <div class="modal-content">
+            <button class="close-button" id="close-modal">&times;</button>
+            
+            <div class="quiz-container" id="quiz-container">
+                <h2 class="quiz-title">Investment Basics - Basic Level Quiz</h2>
+                <div class="progress-text">Question <span id="current-question">1</span> of <span id="total-questions">5</span></div>
+                
+                <h3 class="quiz-question" id="question-text">What is the primary difference between stocks and bonds?</h3>
+                
+                <div class="options-container" id="options-container">
+                    <button class="option-button" data-option="a">Stocks represent ownership, bonds represent debt</button>
+                    <button class="option-button" data-option="b">Stocks are always riskier than bonds</button>
+                    <button class="option-button" data-option="c">Bonds always provide higher returns than stocks</button>
+                    <button class="option-button" data-option="d">Stocks are issued by governments, bonds by companies</button>
+                </div>
+                
+                <div class="feedback-message" id="feedback-message">
+                    Correct! Stocks represent partial ownership in a company, while bonds are essentially loans that investors make to companies or governments.
+                </div>
+                
+                <div class="button-container">
+                    <button class="button" id="prev-btn" disabled>Previous</button>
+                    <button class="button primary" id="next-btn" style="display: none;">Next</button>
+                </div>
+            </div>
+            
+            <div class="result-card" id="result-card">
+                <h2 class="result-title">Quiz Completed!</h2>
+                <div class="result-score" id="result-score">80%</div>
+                <p class="result-message" id="result-message">
+                    Excellent! You've mastered this level and unlocked the next one.
+                </p>
+                <button class="button primary" id="continue-btn">Continue Learning</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Quiz data
+        const quizData = {
+            questions: [
+                {
+                    text: "What is the primary difference between stocks and bonds?",
+                    options: [
+                        { id: 'a', text: "Stocks represent ownership, bonds represent debt" },
+                        { id: 'b', text: "Stocks are always riskier than bonds" },
+                        { id: 'c', text: "Bonds always provide higher returns than stocks" },
+                        { id: 'd', text: "Stocks are issued by governments, bonds by companies" }
+                    ],
+                    correctAnswer: 'a',
+                    explanation: "Stocks represent partial ownership in a company, while bonds are essentially loans that investors make to companies or governments."
+                },
+                {
+                    text: "What is diversification in investing?",
+                    options: [
+                        { id: 'a', text: "Investing all your money in one promising stock" },
+                        { id: 'b', text: "Spreading investments across various assets to reduce risk" },
+                        { id: 'c', text: "Investing only in foreign markets" },
+                        { id: 'd', text: "Changing your investment strategy frequently" }
+                    ],
+                    correctAnswer: 'b',
+                    explanation: "Diversification involves spreading investments across different asset classes, sectors, or regions to reduce overall risk in a portfolio."
+                },
+                {
+                    text: "What is compound interest?",
+                    options: [
+                        { id: 'a', text: "Interest paid only on the principal amount" },
+                        { id: 'b', text: "Interest that decreases over time" },
+                        { id: 'c', text: "Interest earned on both principal and accumulated interest" },
+                        { id: 'd', text: "A fixed interest rate that never changes" }
+                    ],
+                    correctAnswer: 'c',
+                    explanation: "Compound interest is interest calculated on the initial principal and also on the accumulated interest from previous periods, creating a snowball effect."
+                },
+                {
+                    text: "Which of the following is generally considered the safest investment?",
+                    options: [
+                        { id: 'a', text: "Cryptocurrency" },
+                        { id: 'b', text: "Individual stocks" },
+                        { id: 'c', text: "Real estate in developing markets" },
+                        { id: 'd', text: "U.S. Treasury bonds" }
+                    ],
+                    correctAnswer: 'd',
+                    explanation: "U.S. Treasury bonds are backed by the full faith and credit of the U.S. government and are considered among the safest investments available."
+                },
+                {
+                    text: "What is a mutual fund?",
+                    options: [
+                        { id: 'a', text: "A type of bank account with high interest rates" },
+                        { id: 'b', text: "A pool of money from many investors used to purchase a diversified portfolio" },
+                        { id: 'c', text: "A government program to help people save for retirement" },
+                        { id: 'd', text: "A loan given to multiple borrowers simultaneously" }
+                    ],
+                    correctAnswer: 'b',
+                    explanation: "A mutual fund is a professionally managed investment vehicle that pools money from many investors to purchase a diversified portfolio of stocks, bonds, or other securities."
+                }
+            ]
+        };
+
+        // Quiz state
+        let currentQuestion = 0;
+        let selectedOption = null;
+        let score = 0;
+        let quizScores = {
+            basic: 0,
+            moderate: 0,
+            advanced: 0
+        };
+
+        // DOM elements
+        const quizModal = document.getElementById('quiz-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const takeQuizBtn = document.getElementById('take-quiz-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultCard = document.getElementById('result-card');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const resultScore = document.getElementById('result-score');
+        const resultMessage = document.getElementById('result-message');
+        const continueBtn = document.getElementById('continue-btn');
+        const levelButtons = document.querySelectorAll('.level-button');
+
+        // Initialize quiz
+        totalQuestionsSpan.textContent = quizData.questions.length;
+
+        // Event listeners
+        takeQuizBtn.addEventListener('click', openQuizModal);
+        closeModalBtn.addEventListener('click', closeQuizModal);
+        nextBtn.addEventListener('click', goToNextQuestion);
+        prevBtn.addEventListener('click', goToPrevQuestion);
+        continueBtn.addEventListener('click', completeQuiz);
+
+        levelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!button.disabled) {
+                    levelButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    // In a real app, this would load content for the selected level
+                }
+            });
+        });
+
+        // Functions
+        function openQuizModal() {
+            quizModal.classList.add('active');
+            resetQuiz();
+        }
+
+        function closeQuizModal() {
+            quizModal.classList.remove('active');
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            selectedOption = null;
+            score = 0;
+            quizContainer.style.display = 'block';
+            resultCard.style.display = 'none';
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const question = quizData.questions[currentQuestion];
+            questionText.textContent = question.text;
+            currentQuestionSpan.textContent = currentQuestion + 1;
+            
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+            
+            // Add new options
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.dataset.option = option.id;
+                button.textContent = option.text;
+                button.addEventListener('click', () => selectOption(option.id));
+                optionsContainer.appendChild(button);
+            });
+            
+            // Reset UI state
+            feedbackMessage.style.display = 'none';
+            nextBtn.style.display = 'none';
+            prevBtn.disabled = currentQuestion === 0;
+            selectedOption = null;
+        }
+
+        function selectOption(optionId) {
+            if (selectedOption !== null) return;
+            
+            selectedOption = optionId;
+            const correctAnswer = quizData.questions[currentQuestion].correctAnswer;
+            
+            // Update UI
+            const options = document.querySelectorAll('.option-button');
+            options.forEach(option => {
+                option.disabled = true;
+                if (option.dataset.option === optionId) {
+                    option.classList.add('selected');
+                    if (optionId === correctAnswer) {
+                        option.classList.add('correct');
+                        score++;
+                    } else {
+                        option.classList.add('incorrect');
+                    }
+                } else if (option.dataset.option === correctAnswer) {
+                    option.classList.add('correct');
+                }
+            });
+            
+            // Show feedback
+            feedbackMessage.textContent = optionId === correctAnswer ? 
+                "Correct! " : "Incorrect. ";
+            feedbackMessage.textContent += quizData.questions[currentQuestion].explanation;
+            feedbackMessage.className = optionId === correctAnswer ? 
+                'feedback-message' : 'feedback-message incorrect';
+            feedbackMessage.style.display = 'block';
+            
+            // Show next button
+            nextBtn.style.display = 'block';
+        }
+
+        function goToNextQuestion() {
+            if (currentQuestion < quizData.questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function goToPrevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultCard.style.display = 'block';
+            
+            const percentage = Math.round((score / quizData.questions.length) * 100);
+            resultScore.textContent = `${percentage}%`;
+            
+            if (percentage >= 80) {
+                resultMessage.textContent = "Excellent! You've mastered this level and unlocked the next one.";
+            } else if (percentage >= 60) {
+                resultMessage.textContent = "Good job! You have a solid foundation, but you need to score at least 80% to unlock the next level.";
+            } else {
+                resultMessage.textContent = "Keep learning! Review the material and try again to strengthen your knowledge.";
+            }
+        }
+
+        function completeQuiz() {
+            const percentage = Math.round((score / quizData.questions.length) * 100);
+            quizScores.basic = percentage;
+            closeQuizModal();
+            
+            // Update level buttons based on score
+            if (percentage >= 80) {
+                levelButtons[1].disabled = false; // Enable moderate level
+            }
+            
+            // In a real app, this would save the score to state/database
+            console.log('Quiz completed with score:', percentage);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New User Initialization Demo</title>
+    <style>
+        :root {
+            --color-background: #0a1929;
+            --color-text: #e6f1ff;
+            --color-accent: #4bcfea;
+            --color-accent-rich: #0088cc;
+            --glass-background: rgba(255, 255, 255, 0.05);
+            --glass-background-accent: rgba(75, 207, 234, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: var(--color-accent);
+        }
+        
+        .card {
+            background-color: var(--glass-background);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-rich) 100%);
+            color: var(--color-background);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        pre {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+        }
+        
+        .interest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .interest-item {
+            background-color: var(--glass-background-accent);
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .interest-item.selected {
+            background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-rich) 100%);
+            color: var(--color-background);
+        }
+        
+        .syllabus-upload {
+            border: 2px dashed var(--color-accent);
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: var(--glass-background);
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: var(--glass-background-accent);
+            color: var(--color-accent);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>New User Initialization Demo</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="backend">Backend Flow</div>
+            <div class="tab" data-tab="frontend">Frontend Flow</div>
+            <div class="tab" data-tab="api">API Endpoints</div>
+        </div>
+        
+        <div class="tab-content active" id="backend">
+            <div class="demo-section">
+                <h2>1. User Registration</h2>
+                <div class="card">
+                    <p>When a new user registers, the backend creates a User object with default empty values.</p>
+                    <button id="register-btn">Simulate Registration</button>
+                    <pre id="register-output">// Registration output will appear here</pre>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h2>2. User Data Initialization</h2>
+                <div class="card">
+                    <p>The User object is saved to Supabase with empty default values.</p>
+                    <button id="init-btn" disabled>Initialize User Data</button>
+                    <pre id="init-output">// Initialization output will appear here</pre>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h2>3. User Data Persistence</h2>
+                <div class="card">
+                    <p>After the user selects interests or uploads a syllabus, the data is persisted to Supabase.</p>
+                    <button id="persist-btn" disabled>Persist User Data</button>
+                    <pre id="persist-output">// Persistence output will appear here</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="frontend">
+            <div class="demo-section">
+                <h2>Onboarding Welcome Screen</h2>
+                <div class="card">
+                    <h3>Welcome to FinScholars!</h3>
+                    <p>We're excited to have you join our community of financial learners. Let's personalize your experience to help you achieve your financial goals.</p>
+                    
+                    <h3>Select Your Financial Interests</h3>
+                    <div class="interest-grid">
+                        <div class="interest-item">Personal Finance</div>
+                        <div class="interest-item">Investing</div>
+                        <div class="interest-item">Budgeting</div>
+                        <div class="interest-item">Retirement Planning</div>
+                        <div class="interest-item">Debt Management</div>
+                        <div class="interest-item">Tax Planning</div>
+                        <div class="interest-item">Real Estate</div>
+                        <div class="interest-item">Insurance</div>
+                        <div class="interest-item">Cryptocurrency</div>
+                        <div class="interest-item">Stock Market</div>
+                        <div class="interest-item">Financial Independence</div>
+                        <div class="interest-item">Credit Building</div>
+                    </div>
+                    
+                    <h3>Or Upload Your Syllabus</h3>
+                    <div class="syllabus-upload">
+                        <p>Click to upload a syllabus</p>
+                        <input type="file" id="syllabus-input" style="display: none;">
+                    </div>
+                    
+                    <button id="get-started-btn">Get Started</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="api">
+            <div class="demo-section">
+                <h2>API Endpoints</h2>
+                <div class="card">
+                    <h3>POST /api/user/signup</h3>
+                    <pre>
+// Request
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+
+// Response
+{
+  "success": true,
+  "session_id": "session_12345",
+  "user": {
+    "id": "user_12345",
+    "email": "user@example.com",
+    "created_at": "2023-05-15T10:30:00Z",
+    "last_login": "2023-05-15T10:30:00Z",
+    "interests": [],
+    "modules": [],
+    "badges": [],
+    "progress_percentage": 0,
+    "focus_sessions": [],
+    "settings": {}
+  }
+}
+                    </pre>
+                    
+                    <h3>POST /api/user/interests</h3>
+                    <pre>
+// Request
+{
+  "user_id": "user_12345",
+  "interests": ["Investing", "Budgeting", "Retirement Planning"]
+}
+
+// Response
+{
+  "success": true,
+  "message": "Interests updated successfully",
+  "user": {
+    "id": "user_12345",
+    "interests": ["Investing", "Budgeting", "Retirement Planning"],
+    // Other user data...
+  }
+}
+                    </pre>
+                    
+                    <h3>POST /api/user/upload-syllabus</h3>
+                    <pre>
+// Request (multipart/form-data)
+{
+  "userId": "user_12345",
+  "syllabus": [File]
+}
+
+// Response
+{
+  "success": true,
+  "message": "Syllabus processed successfully",
+  "modules_generated": 5
+}
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mock user data
+        let mockUser = null;
+        
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Backend demo functionality
+        document.getElementById('register-btn').addEventListener('click', () => {
+            const registerOutput = document.getElementById('register-output');
+            registerOutput.textContent = 'Creating new user account...';
+            
+            setTimeout(() => {
+                mockUser = {
+                    id: 'user_' + Math.floor(Math.random() * 10000),
+                    email: 'user' + Math.floor(Math.random() * 1000) + '@example.com',
+                    created_at: new Date().toISOString(),
+                    last_login: new Date().toISOString(),
+                    interests: [],
+                    modules: [],
+                    badges: [],
+                    progress_percentage: 0,
+                    focus_sessions: [],
+                    settings: {}
+                };
+                
+                registerOutput.textContent = 'User registered successfully:\n\n' + JSON.stringify(mockUser, null, 2);
+                document.getElementById('init-btn').disabled = false;
+            }, 1000);
+        });
+        
+        document.getElementById('init-btn').addEventListener('click', () => {
+            const initOutput = document.getElementById('init-output');
+            initOutput.textContent = 'Initializing user data in Supabase...';
+            
+            setTimeout(() => {
+                initOutput.textContent = 'User data initialized in Supabase:\n\n' + JSON.stringify(mockUser, null, 2);
+                document.getElementById('persist-btn').disabled = false;
+            }, 1000);
+        });
+        
+        document.getElementById('persist-btn').addEventListener('click', () => {
+            const persistOutput = document.getElementById('persist-output');
+            persistOutput.textContent = 'User selected interests: ["Investing", "Budgeting"]\nProcessing...';
+            
+            setTimeout(() => {
+                mockUser.interests = ['Investing', 'Budgeting'];
+                mockUser.modules = [
+                    {
+                        id: 'module_1',
+                        title: 'Introduction to Investing',
+                        lessons: 5,
+                        completed: false
+                    },
+                    {
+                        id: 'module_2',
+                        title: 'Budgeting Basics',
+                        lessons: 4,
+                        completed: false
+                    }
+                ];
+                
+                persistOutput.textContent = 'User data updated and persisted to Supabase:\n\n' + JSON.stringify(mockUser, null, 2);
+            }, 1500);
+        });
+        
+        // Frontend demo functionality
+        document.querySelectorAll('.interest-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.classList.toggle('selected');
+            });
+        });
+        
+        document.querySelector('.syllabus-upload').addEventListener('click', () => {
+            document.getElementById('syllabus-input').click();
+        });
+        
+        document.getElementById('syllabus-input').addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                document.querySelector('.syllabus-upload p').textContent = `Selected: ${e.target.files[0].name}`;
+            }
+        });
+        
+        document.getElementById('get-started-btn').addEventListener('click', () => {
+            const selectedInterests = Array.from(document.querySelectorAll('.interest-item.selected')).map(item => item.textContent);
+            const syllabusFile = document.getElementById('syllabus-input').files[0];
+            
+            if (selectedInterests.length > 0 || syllabusFile) {
+                alert(`Onboarding complete!\n\nSelected interests: ${selectedInterests.join(', ')}\nSyllabus: ${syllabusFile ? syllabusFile.name : 'None'}`);
+            } else {
+                alert('Please select at least one interest or upload a syllabus to continue.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinScholars Dashboard with Badges</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --color-background: #0a1929;
+      --color-accent: #4BCFEA;
+      --color-accent-rich: #36A9D9;
+      --color-success: #00E676;
+      --glass-background: rgba(255, 255, 255, 0.05);
+      --glass-background-accent: rgba(255, 255, 255, 0.08);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+      --glass-glow: 0 0 15px rgba(75, 207, 234, 0.2);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--color-background);
+      color: white;
+      min-height: 100vh;
+      padding: 0;
+    }
+    
+    .navbar {
+      background: rgba(10, 25, 41, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(75, 207, 234, 0.2);
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-accent);
+    }
+    
+    .dashboard-container {
+      min-height: 100vh;
+      padding: 6rem 2rem 2rem;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: white;
+      max-width: 1200px;
+      margin: 0 auto 1.5rem;
+    }
+    
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .goals-section {
+      background: var(--glass-background);
+      backdrop-filter: blur(12px);
+      border: var(--glass-border);
+      box-shadow: var(--glass-glow);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+    }
+    
+    .goals-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .goal-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 0.5rem 0;
+    }
+    
+    .goal-checkmark {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-right: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .goal-checkmark.completed {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+      box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+    }
+    
+    .goal-text {
+      color: white;
+    }
+    
+    .goal-text.completed {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: line-through;
+    }
+    
+    .module-card {
+      background: rgba(75, 207, 234, 0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(75, 207, 234, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(75, 207, 234, 0.4);
+    }
+    
+    .module-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .module-description {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, #4BCFEA, #36A9D9);
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(75, 207, 234, 0.6);
+      position: relative;
+    }
+    
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      filter: blur(2px);
+      opacity: 0.7;
+    }
+    
+    .checkmark {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #4BCFEA;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+    }
+    
+    .button {
+      background: rgba(75, 207, 234, 0.1);
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+    
+    .button:hover {
+      background: rgba(75, 207, 234, 0.2);
+    }
+    
+    /* Badges Gallery Styles */
+    .gallery-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+    }
+    
+    .gallery-title {
+      font-size: 1.8rem;
+      color: var(--color-accent);
+      margin-bottom: 0.5rem;
+    }
+    
+    .gallery-description {
+      color: rgba(230, 241, 255, 0.8);
+      margin-bottom: 1rem;
+    }
+    
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    @media (min-width: 768px) {
+      .badges-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+    }
+    
+    .badge-card {
+      background: var(--glass-background);
+      backdrop-filter: blur(12px);
+      border: var(--glass-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .badge-card.earned {
+      box-shadow: var(--glass-glow);
+    }
+    
+    .badge-card.new {
+      animation: pulse 2s infinite;
+    }
+    
+    .badge-card:not(.earned) {
+      opacity: 0.6;
+      filter: grayscale(1);
+    }
+    
+    .badge-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .badge-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+      opacity: 0.7;
+    }
+    
+    .badge-card:not(.earned)::before {
+      opacity: 0.3;
+    }
+    
+    .badge-icon-container {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    
+    .badge-icon-container.new {
+      animation: glow 3s infinite;
+    }
+    
+    .badge-icon {
+      color: var(--color-accent);
+      transition: all 0.3s ease;
+    }
+    
+    .badge-card:not(.earned) .badge-icon {
+      color: rgba(75, 207, 234, 0.4);
+    }
+    
+    .badge-name {
+      font-size: 1.2rem;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+    
+    .badge-description {
+      font-size: 0.9rem;
+      color: rgba(230, 241, 255, 0.7);
+      margin-bottom: 0.5rem;
+    }
+    
+    .badge-date {
+      font-size: 0.8rem;
+      color: var(--color-accent);
+    }
+    
+    .new-badge-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--color-accent);
+      color: #0a192f;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      z-index: 1;
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(75, 207, 234, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(75, 207, 234, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(75, 207, 234, 0);
+      }
+    }
+    
+    @keyframes glow {
+      0% {
+        filter: drop-shadow(0 0 5px rgba(75, 207, 234, 0.7));
+      }
+      50% {
+        filter: drop-shadow(0 0 15px rgba(75, 207, 234, 0.9));
+      }
+      100% {
+        filter: drop-shadow(0 0 5px rgba(75, 207, 234, 0.7));
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .controls {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .btn {
+      background: rgba(75, 207, 234, 0.1);
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+      background: rgba(75, 207, 234, 0.2);
+    }
+    
+    .btn-primary {
+      background: var(--color-accent);
+      color: var(--color-background);
+    }
+    
+    .btn-primary:hover {
+      background: rgba(75, 207, 234, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">FinScholars</div>
+  </div>
+  
+  <div class="dashboard-container">
+    <div class="goals-section">
+      <h2 class="section-title">Your Learning Goals</h2>
+      <ul class="goals-list">
+        <li class="goal-item">
+          <div class="goal-checkmark completed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="goal-text completed">Complete Introduction to Finance module</span>
+        </li>
+        <li class="goal-item">
+          <div class="goal-checkmark completed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="goal-text completed">Finish 3 quizzes with score above 80%</span>
+        </li>
+        <li class="goal-item">
+          <div class="goal-checkmark">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="goal-text">Complete Budgeting Basics module</span>
+        </li>
+        <li class="goal-item">
+          <div class="goal-checkmark">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="goal-text">Create your first personal budget</span>
+        </li>
+        <li class="goal-item">
+          <div class="goal-checkmark completed">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="goal-text completed">Start Investment Strategies module</span>
+        </li>
+      </ul>
+      
+      <!-- Badges Gallery Integration -->
+      <div class="gallery-container">
+        <h2 class="gallery-title">Your Achievements</h2>
+        <p class="gallery-description">
+          Collect badges as you progress through your financial learning journey.
+        </p>
+        
+        <div class="badges-grid" id="badges-grid">
+          <!-- Badges will be dynamically inserted here -->
+        </div>
+        
+        <div class="controls">
+          <button class="btn" id="earn-badge">Earn New Badge</button>
+          <button class="btn btn-primary" id="trigger-confetti">Celebrate Achievements</button>
+        </div>
+      </div>
+    </div>
+    
+    <h2 class="section-title">Your Learning Modules</h2>
+    
+    <div class="dashboard-grid">
+      <!-- Module 1 (Completed) -->
+      <div class="module-card">
+        <h3 class="module-title">
+          Introduction to Finance
+          <span class="checkmark">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12L10 17L19 8" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </h3>
+        <p class="module-description">Learn the fundamentals of finance and basic concepts to build your knowledge foundation.</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 100%"></div>
+        </div>
+        <button class="button">Review</button>
+      </div>
+      
+      <!-- Module 2 (In Progress) -->
+      <div class="module-card">
+        <h3 class="module-title">Budgeting Basics</h3>
+        <p class="module-description">Master the art of creating and maintaining a personal budget to achieve financial goals.</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 65%"></div>
+        </div>
+        <button class="button">Continue</button>
+      </div>
+      
+      <!-- Module 3 (In Progress) -->
+      <div class="module-card">
+        <h3 class="module-title">Investment Strategies</h3>
+        <p class="module-description">Learn different investment approaches and how to build a diversified portfolio.</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 30%"></div>
+        </div>
+        <button class="button">Continue</button>
+      </div>
+      
+      <!-- Module 4 (Not Started) -->
+      <div class="module-card">
+        <h3 class="module-title">Debt Management</h3>
+        <p class="module-description">Understand different types of debt and strategies for effective debt management.</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <button class="button">Start</button>
+      </div>
+      
+      <!-- Module 5 (Not Started) -->
+      <div class="module-card">
+        <h3 class="module-title">Retirement Planning</h3>
+        <p class="module-description">Plan for your future with effective retirement strategies and savings approaches.</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <button class="button">Start</button>
+      </div>
+      
+      <!-- Module 6 (Not Started) -->
+      <div class="module-card">
+        <h3 class="module-title">Tax Optimization</h3>
+        <p class="module-description">Learn legal strategies to minimize tax burden and maximize your financial efficiency.</p>
+        <div class="progress-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <button class="button">Start</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Mock badge data
+    const badges = [
+      {
+        id: 1,
+        name: 'First Steps',
+        description: 'Completed your first module',
+        icon: 'graduation-cap',
+        earned: true,
+        earned_date: '2023-10-15',
+        is_new: false
+      },
+      {
+        id: 2,
+        name: 'Quiz Master',
+        description: 'Scored 100% on 3 quizzes',
+        icon: 'award',
+        earned: true,
+        earned_date: '2023-10-20',
+        is_new: true
+      },
+      {
+        id: 3,
+        name: 'Consistent Learner',
+        description: 'Logged in for 7 consecutive days',
+        icon: 'calendar-check',
+        earned: true,
+        earned_date: '2023-10-25',
+        is_new: false
+      },
+      {
+        id: 4,
+        name: 'Investment Guru',
+        description: 'Completed all investment modules',
+        icon: 'trending-up',
+        earned: false,
+        earned_date: null,
+        is_new: false
+      },
+      {
+        id: 5,
+        name: 'Budget Master',
+        description: 'Completed all budgeting modules',
+        icon: 'piggy-bank',
+        earned: false,
+        earned_date: null,
+        is_new: false
+      },
+      {
+        id: 6,
+        name: 'Financial Planner',
+        description: 'Created a comprehensive financial plan',
+        icon: 'file-text',
+        earned: false,
+        earned_date: null,
+        is_new: false
+      }
+    ];
+    
+    // SVG icons for badges
+    const icons = {
+      'graduation-cap': `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+          <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path>
+        </svg>
+      `,
+      'award': `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="7"></circle>
+          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+        </svg>
+      `,
+      'calendar-check': `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+          <path d="M9 16l2 2 4-4"></path>
+        </svg>
+      `,
+      'trending-up': `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+      `,
+      'piggy-bank': `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"></path>
+          <path d="M2 9v1c0 1.1.9 2 2 2h1"></path>
+          <path d="M16 11h0"></path>
+        </svg>
+      `,
+      'file-text': `
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      `
+    };
+    
+    // Function to render badges
+    function renderBadges() {
+      const badgesGrid = document.getElementById('badges-grid');
+      badgesGrid.innerHTML = '';
+      
+      badges.forEach((badge, index) => {
+        const badgeCard = document.createElement('div');
+        badgeCard.className = `badge-card ${badge.earned ? 'earned' : ''} ${badge.earned && badge.is_new ? 'new' : ''}`;
+        badgeCard.classList.add('fade-in');
+        badgeCard.style.animationDelay = `${index * 100}ms`;
+        
+        let badgeHTML = '';
+        
+        if (badge.earned && badge.is_new) {
+          badgeHTML += `<div class="new-badge-indicator">NEW!</div>`;
+        }
+        
+        badgeHTML += `
+          <div class="badge-icon-container ${badge.earned && badge.is_new ? 'new' : ''}">
+            <div class="badge-icon">${icons[badge.icon] || ''}</div>
+          </div>
+          <h3 class="badge-name">${badge.name}</h3>
+          <p class="badge-description">${badge.description}</p>
+        `;
+        
+        if (badge.earned) {
+          const earnedDate = new Date(badge.earned_date).toLocaleDateString();
+          badgeHTML += `<span class="badge-date">Earned: ${earnedDate}</span>`;
+        }
+        
+        badgeCard.innerHTML = badgeHTML;
+        badgesGrid.appendChild(badgeCard);
+      });
+      
+      // Check if there are any new badges to trigger animation
+      const hasNewBadges = badges.some(badge => badge.earned && badge.is_new);
+      if (hasNewBadges) {
+        setTimeout(() => {
+          triggerConfetti();
+        }, 500);
+      }
+    }
+    
+    // Function to trigger confetti animation
+    function triggerConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#4bcfea', '#ffffff', '#0a192f']
+      });
+    }
+    
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      renderBadges();
+      
+      // Event listeners for buttons
+      document.getElementById('trigger-confetti').addEventListener('click', triggerConfetti);
+      
+      document.getElementById('earn-badge').addEventListener('click', () => {
+        // Find the first unearned badge
+        const unearnedBadge = badges.find(badge => !badge.earned);
+        
+        if (unearnedBadge) {
+          // Update the badge
+          unearnedBadge.earned = true;
+          unearnedBadge.is_new = true;
+          unearnedBadge.earned_date = new Date().toISOString().split('T')[0];
+          
+          // Re-render badges
+          renderBadges();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

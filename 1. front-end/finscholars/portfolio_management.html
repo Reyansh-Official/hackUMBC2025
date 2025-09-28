@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Management</title>
+    <style>
+        :root {
+            --color-primary: #0a192f;
+            --color-secondary: #172a45;
+            --color-accent: #4bcfea;
+            --color-text: #e6f1ff;
+            --color-success: #00e676;
+            --color-error: #ff4c4c;
+            --glass-background: rgba(23, 42, 69, 0.7);
+            --glass-border: 1px solid rgba(75, 207, 234, 0.3);
+            --glass-glow: 0 0 20px rgba(75, 207, 234, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+            color: var(--color-text);
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(75, 207, 234, 0.5);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.1s ease;
+        }
+
+        .module-container {
+            background: var(--glass-background);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-glow);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .module-header {
+            margin-bottom: 2rem;
+        }
+
+        .module-title {
+            font-size: 2.5rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-description {
+            font-size: 1.2rem;
+            color: rgba(230, 241, 255, 0.8);
+            margin-bottom: 1.5rem;
+        }
+
+        .submodule {
+            margin-bottom: 3rem;
+        }
+
+        .submodule-title {
+            font-size: 1.8rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(75, 207, 234, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.8rem;
+            color: var(--color-accent);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        ul, ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .quiz-section {
+            background: rgba(10, 25, 47, 0.7);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .quiz-title {
+            font-size: 1.6rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .quiz-option {
+            background: rgba(23, 42, 69, 0.8);
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .quiz-option:hover {
+            background: rgba(75, 207, 234, 0.2);
+        }
+
+        .quiz-option.selected {
+            background: rgba(75, 207, 234, 0.3);
+            border: 1px solid var(--color-accent);
+        }
+
+        .submit-quiz {
+            background: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+
+        .submit-quiz:hover {
+            background: #3ab7d1;
+        }
+
+        .back-to-dashboard {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-to-dashboard:hover {
+            text-decoration: underline;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .nav-button {
+            background: rgba(75, 207, 234, 0.2);
+            color: var(--color-text);
+            border: 1px solid rgba(75, 207, 234, 0.3);
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .nav-button:hover {
+            background: rgba(75, 207, 234, 0.3);
+        }
+
+        .highlight {
+            color: var(--color-accent);
+            font-weight: 500;
+        }
+
+        .info-box {
+            background: rgba(75, 207, 234, 0.1);
+            border-left: 3px solid var(--color-accent);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(75, 207, 234, 0.2);
+        }
+
+        th {
+            background: rgba(75, 207, 234, 0.1);
+            color: var(--color-accent);
+        }
+
+        .chart-placeholder {
+            background: rgba(75, 207, 234, 0.1);
+            border: 1px dashed rgba(75, 207, 234, 0.3);
+            border-radius: 8px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="background-animation"></canvas>
+    <div class="cursor"></div>
+
+    <div class="module-container">
+        <div class="module-header">
+            <h1 class="module-title">Portfolio Management</h1>
+            <p class="module-description">Learn how to build, manage, and optimize investment portfolios for long-term wealth creation.</p>
+        </div>
+
+        <div class="submodule">
+            <h2 class="submodule-title">1. Portfolio Management Fundamentals</h2>
+            
+            <h3>What is Portfolio Management?</h3>
+            <p>Portfolio management is the art and science of selecting and overseeing a group of investments that meet the long-term financial objectives and risk tolerance of an investor. A well-managed portfolio balances risk and reward according to an individual's preferences, goals, and investment timeline.</p>
+            
+            <h3>Key Components of Portfolio Management</h3>
+            <ul>
+                <li><strong>Asset Allocation</strong>: The process of dividing investments among different asset categories such as stocks, bonds, cash, real estate, and alternatives</li>
+                <li><strong>Diversification</strong>: Spreading investments across various assets to reduce risk</li>
+                <li><strong>Rebalancing</strong>: Periodically buying or selling assets to maintain the original or desired level of asset allocation</li>
+                <li><strong>Risk Management</strong>: Identifying, analyzing, and accepting or mitigating investment uncertainty</li>
+                <li><strong>Performance Monitoring</strong>: Tracking investment results against appropriate benchmarks</li>
+            </ul>
+            
+            <h3>Types of Portfolio Management</h3>
+            <ul>
+                <li><strong>Active Management</strong>: Involves actively buying and selling securities to outperform a specific benchmark or index</li>
+                <li><strong>Passive Management</strong>: Involves tracking a market index to match its performance, typically through index funds or ETFs</li>
+                <li><strong>Discretionary Management</strong>: Investment decisions are made by a portfolio manager on behalf of a client</li>
+                <li><strong>Non-discretionary Management</strong>: Investment decisions require client approval before execution</li>
+            </ul>
+            
+            <div class="info-box">
+                <p><strong>Did You Know?</strong> Studies have shown that asset allocation is responsible for more than 90% of a portfolio's return variability over time, making it one of the most critical decisions in portfolio management.</p>
+            </div>
+        </div>
+
+        <div class="submodule">
+            <h2 class="submodule-title">2. Asset Allocation Strategies</h2>
+            
+            <h3>Strategic Asset Allocation</h3>
+            <p>Strategic asset allocation involves setting target allocations for various asset classes and rebalancing periodically. The focus is on creating a portfolio aligned with long-term investment goals and risk tolerance, rather than trying to time the market.</p>
+            
+            <h3>Tactical Asset Allocation</h3>
+            <p>Tactical asset allocation takes a more active approach by temporarily adjusting the portfolio's asset mix to capitalize on market conditions or economic trends. This approach requires more frequent monitoring and adjustments.</p>
+            
+            <h3>Core-Satellite Approach</h3>
+            <p>This hybrid strategy combines passive management for the "core" of the portfolio (typically using index funds) with active management for "satellite" positions that aim to generate excess returns.</p>
+            
+            <h3>Age-Based Asset Allocation</h3>
+            <p>This approach adjusts the portfolio's risk profile based on the investor's age or time horizon. Younger investors typically have higher allocations to equities, while older investors shift toward more conservative investments like bonds.</p>
+            
+            <h3>Risk-Based Asset Allocation</h3>
+            <p>This strategy focuses on the investor's risk tolerance rather than age, allocating assets to achieve a specific risk-return profile. Common approaches include:</p>
+            <ul>
+                <li><strong>Conservative</strong>: 20-30% stocks, 60-70% bonds, 10% cash</li>
+                <li><strong>Moderate</strong>: 40-60% stocks, 30-50% bonds, 5-10% cash</li>
+                <li><strong>Aggressive</strong>: 70-90% stocks, 10-30% bonds, 0-5% cash</li>
+            </ul>
+            
+            <div class="chart-placeholder">
+                [Asset Allocation Pie Charts for Different Risk Profiles]
+            </div>
+        </div>
+
+        <div class="submodule">
+            <h2 class="submodule-title">3. Portfolio Diversification Techniques</h2>
+            
+            <h3>Why Diversification Matters</h3>
+            <p>Diversification is a risk management strategy that mixes a variety of investments within a portfolio. The rationale is that a portfolio constructed of different kinds of assets will, on average, yield higher long-term returns and lower the risk of any individual holding or security.</p>
+            
+            <h3>Diversification Across Asset Classes</h3>
+            <p>The most basic form of diversification involves spreading investments across major asset classes:</p>
+            <ul>
+                <li><strong>Equities (Stocks)</strong>: Ownership in companies, offering growth potential</li>
+                <li><strong>Fixed Income (Bonds)</strong>: Debt securities providing regular income</li>
+                <li><strong>Cash and Equivalents</strong>: Liquid assets for stability and emergency funds</li>
+                <li><strong>Real Estate</strong>: Property investments for income and appreciation</li>
+                <li><strong>Alternative Investments</strong>: Commodities, private equity, hedge funds, etc.</li>
+            </ul>
+            
+            <h3>Diversification Within Asset Classes</h3>
+            <p>Beyond diversifying across asset classes, investors should diversify within each asset class:</p>
+            <ul>
+                <li><strong>Equity Diversification</strong>: Across market capitalizations (large, mid, small), sectors, industries, geographic regions, and investment styles (growth vs. value)</li>
+                <li><strong>Fixed Income Diversification</strong>: Across maturities, credit qualities, issuers, and types (government, corporate, municipal)</li>
+                <li><strong>Geographic Diversification</strong>: Domestic and international investments to reduce country-specific risk</li>
+            </ul>
+            
+            <h3>Correlation and Diversification</h3>
+            <p>Effective diversification requires understanding correlation—the degree to which different assets move in relation to each other. The goal is to combine assets with low or negative correlations to reduce overall portfolio volatility.</p>
+            
+            <div class="info-box">
+                <p><strong>Key Insight:</strong> During market crises, correlations between asset classes often increase, temporarily reducing diversification benefits. This phenomenon, known as "correlation convergence," highlights the importance of including truly uncorrelated assets in a portfolio.</p>
+            </div>
+        </div>
+
+        <div class="submodule">
+            <h2 class="submodule-title">4. Portfolio Performance Measurement</h2>
+            
+            <h3>Key Performance Metrics</h3>
+            <p>Evaluating portfolio performance requires understanding several key metrics:</p>
+            <ul>
+                <li><strong>Total Return</strong>: The combined income and capital appreciation of an investment over a specific period</li>
+                <li><strong>Risk-Adjusted Return</strong>: Return earned per unit of risk taken, measured by ratios like Sharpe, Sortino, and Treynor</li>
+                <li><strong>Alpha</strong>: Excess return of an investment relative to the return of a benchmark index</li>
+                <li><strong>Beta</strong>: Measure of volatility or systematic risk compared to the market</li>
+                <li><strong>Standard Deviation</strong>: Measure of the dispersion of returns, indicating volatility</li>
+                <li><strong>Maximum Drawdown</strong>: The largest peak-to-trough decline in portfolio value</li>
+            </ul>
+            
+            <h3>Benchmarking</h3>
+            <p>Comparing portfolio performance against appropriate benchmarks is essential for meaningful evaluation. Benchmarks should be:</p>
+            <ul>
+                <li>Relevant to the portfolio's investment strategy</li>
+                <li>Investable and accessible to investors</li>
+                <li>Measured and calculated consistently</li>
+                <li>Specified in advance of the evaluation period</li>
+            </ul>
+            
+            <h3>Time-Weighted vs. Money-Weighted Returns</h3>
+            <p><strong>Time-Weighted Return (TWR)</strong>: Measures the compound rate of growth in a portfolio, eliminating the distorting effects of cash flows. It's useful for evaluating investment manager performance.</p>
+            <p><strong>Money-Weighted Return (MWR)</strong>: Accounts for the timing and amount of cash flows, reflecting the actual investor experience. It's calculated as the internal rate of return (IRR) of the portfolio.</p>
+            
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Description</th>
+                    <th>When to Use</th>
+                </tr>
+                <tr>
+                    <td>Sharpe Ratio</td>
+                    <td>Measures excess return per unit of total risk</td>
+                    <td>Comparing portfolios with different risk levels</td>
+                </tr>
+                <tr>
+                    <td>Sortino Ratio</td>
+                    <td>Similar to Sharpe but only considers downside risk</td>
+                    <td>When upside volatility isn't a concern</td>
+                </tr>
+                <tr>
+                    <td>Information Ratio</td>
+                    <td>Measures excess return relative to benchmark per unit of tracking risk</td>
+                    <td>Evaluating active management skill</td>
+                </tr>
+                <tr>
+                    <td>Treynor Ratio</td>
+                    <td>Measures excess return per unit of systematic risk (beta)</td>
+                    <td>For well-diversified portfolios</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="submodule">
+            <h2 class="submodule-title">5. Portfolio Rebalancing Strategies</h2>
+            
+            <h3>Why Rebalance?</h3>
+            <p>Over time, different assets in a portfolio will grow at different rates, causing the portfolio's asset allocation to drift from its target. Rebalancing involves adjusting the portfolio back to its target allocation to maintain the desired risk-return profile.</p>
+            
+            <h3>Rebalancing Methods</h3>
+            <ul>
+                <li><strong>Calendar Rebalancing</strong>: Adjusting the portfolio at predetermined time intervals (monthly, quarterly, annually)</li>
+                <li><strong>Percentage-of-Portfolio Rebalancing</strong>: Rebalancing when an asset class deviates from its target allocation by a predetermined percentage (e.g., 5% or 10%)</li>
+                <li><strong>Tactical Rebalancing</strong>: Adjusting allocations based on market conditions or economic outlook</li>
+                <li><strong>Constant-Proportion Portfolio Insurance (CPPI)</strong>: Dynamically allocating between risky and risk-free assets based on a cushion value</li>
+            </ul>
+            
+            <h3>Rebalancing Considerations</h3>
+            <p>When implementing a rebalancing strategy, investors should consider:</p>
+            <ul>
+                <li><strong>Transaction Costs</strong>: Trading fees, bid-ask spreads, and potential tax implications</li>
+                <li><strong>Tax Efficiency</strong>: Utilizing tax-advantaged accounts for rebalancing when possible</li>
+                <li><strong>Rebalancing Frequency</strong>: Balancing the benefits of maintaining target allocations against increased costs</li>
+                <li><strong>Cash Flows</strong>: Using new contributions or withdrawals to rebalance efficiently</li>
+            </ul>
+            
+            <h3>Rebalancing Premium</h3>
+            <p>Research suggests that disciplined rebalancing can potentially add 0.2% to 0.5% in annual returns over time, a concept known as the "rebalancing premium." This premium comes from systematically selling assets that have become relatively expensive and buying those that have become relatively cheap.</p>
+            
+            <div class="info-box">
+                <p><strong>Pro Tip:</strong> Consider implementing a "rebalancing band" approach, where you only rebalance when asset allocations drift outside a predetermined range (e.g., ±5% from target). This approach can help reduce transaction costs while maintaining reasonable alignment with target allocations.</p>
+            </div>
+        </div>
+
+        <div class="submodule">
+            <h2 class="submodule-title">6. Advanced Portfolio Optimization</h2>
+            
+            <h3>Modern Portfolio Theory (MPT)</h3>
+            <p>Developed by Harry Markowitz in 1952, MPT provides a framework for constructing portfolios that maximize expected return for a given level of risk. Key concepts include:</p>
+            <ul>
+                <li><strong>Efficient Frontier</strong>: The set of optimal portfolios that offer the highest expected return for a defined level of risk</li>
+                <li><strong>Capital Allocation Line</strong>: Represents portfolios combining a risk-free asset with a risky portfolio</li>
+                <li><strong>Capital Market Line</strong>: The line connecting the risk-free rate to the tangency portfolio on the efficient frontier</li>
+            </ul>
+            
+            <h3>Post-Modern Portfolio Theory (PMPT)</h3>
+            <p>PMPT extends MPT by using downside risk instead of standard deviation as the risk measure, recognizing that investors are more concerned about downside losses than upside volatility.</p>
+            
+            <h3>Factor-Based Portfolio Construction</h3>
+            <p>Factor investing involves targeting specific drivers of returns across asset classes. Common factors include:</p>
+            <ul>
+                <li><strong>Value</strong>: Investing in undervalued assets relative to fundamentals</li>
+                <li><strong>Size</strong>: Exposure to smaller companies that may offer higher returns</li>
+                <li><strong>Momentum</strong>: Investing in assets with positive recent performance</li>
+                <li><strong>Quality</strong>: Focusing on companies with strong balance sheets and stable earnings</li>
+                <li><strong>Low Volatility</strong>: Targeting assets with lower price fluctuations</li>
+            </ul>
+            
+            <h3>Risk Parity</h3>
+            <p>Risk parity is an approach that allocates capital based on risk contribution rather than dollar amounts. It aims to create a portfolio where each asset class contributes equally to the portfolio's total risk, often using leverage to boost returns from lower-risk assets.</p>
+            
+            <h3>Black-Litterman Model</h3>
+            <p>This model combines market equilibrium returns with investor views to create a more stable and intuitive asset allocation. It addresses some of the limitations of traditional mean-variance optimization, such as extreme allocations and high sensitivity to input assumptions.</p>
+            
+            <div class="chart-placeholder">
+                [Efficient Frontier Curve with Optimal Portfolio]
+            </div>
+        </div>
+
+        <div class="quiz-section">
+            <h2 class="quiz-title">Portfolio Management Quiz</h2>
+            
+            <div class="quiz-question">
+                <h3>1. Which of the following is NOT a key component of portfolio management?</h3>
+                <div class="quiz-options">
+                    <div class="quiz-option">Asset allocation</div>
+                    <div class="quiz-option">Market timing</div>
+                    <div class="quiz-option">Diversification</div>
+                    <div class="quiz-option">Rebalancing</div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <h3>2. What is the primary goal of diversification in a portfolio?</h3>
+                <div class="quiz-options">
+                    <div class="quiz-option">To maximize returns regardless of risk</div>
+                    <div class="quiz-option">To reduce risk without necessarily sacrificing returns</div>
+                    <div class="quiz-option">To eliminate the need for rebalancing</div>
+                    <div class="quiz-option">To ensure the portfolio only contains blue-chip stocks</div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <h3>3. Which performance metric measures the excess return of an investment relative to a benchmark index?</h3>
+                <div class="quiz-options">
+                    <div class="quiz-option">Beta</div>
+                    <div class="quiz-option">Standard deviation</div>
+                    <div class="quiz-option">Alpha</div>
+                    <div class="quiz-option">Sharpe ratio</div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <h3>4. What is the efficient frontier in Modern Portfolio Theory?</h3>
+                <div class="quiz-options">
+                    <div class="quiz-option">The set of optimal portfolios that offer the highest expected return for a defined level of risk</div>
+                    <div class="quiz-option">The line connecting the risk-free rate to the market portfolio</div>
+                    <div class="quiz-option">The maximum possible return regardless of risk</div>
+                    <div class="quiz-option">The minimum risk level for any portfolio</div>
+                </div>
+            </div>
+            
+            <div class="quiz-question">
+                <h3>5. Which rebalancing method adjusts the portfolio when an asset class deviates from its target by a predetermined percentage?</h3>
+                <div class="quiz-options">
+                    <div class="quiz-option">Calendar rebalancing</div>
+                    <div class="quiz-option">Tactical rebalancing</div>
+                    <div class="quiz-option">Percentage-of-portfolio rebalancing</div>
+                    <div class="quiz-option">Constant-proportion portfolio insurance</div>
+                </div>
+            </div>
+            
+            <button class="submit-quiz">Submit Answers</button>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-button">Previous Module</button>
+            <a href="dashboard.html" class="back-to-dashboard">Back to Dashboard</a>
+            <button class="nav-button">Next Module</button>
+        </div>
+    </div>
+
+    <script>
+        // Background animation
+        const canvas = document.querySelector('.background-animation');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createParticles();
+        }
+        
+        function createParticles() {
+            particles = [];
+            const particleCount = Math.floor(window.innerWidth * window.innerHeight / 10000);
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    color: `rgba(75, 207, 234, ${Math.random() * 0.5 + 0.1})`,
+                    speedX: Math.random() * 0.5 - 0.25,
+                    speedY: Math.random() * 0.5 - 0.25
+                });
+            }
+        }
+        
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+                
+                // Update position
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                
+                // Wrap around edges
+                if (particle.x < 0) particle.x = canvas.width;
+                if (particle.x > canvas.width) particle.x = 0;
+                if (particle.y < 0) particle.y = canvas.height;
+                if (particle.y > canvas.height) particle.y = 0;
+            });
+            
+            requestAnimationFrame(drawParticles);
+        }
+        
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+        
+        document.addEventListener('mousedown', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
+        });
+        
+        document.addEventListener('mouseup', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+        
+        // Quiz functionality
+        const quizOptions = document.querySelectorAll('.quiz-option');
+        quizOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Deselect other options in the same question
+                const questionOptions = option.parentElement.querySelectorAll('.quiz-option');
+                questionOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Select this option
+                option.classList.add('selected');
+            });
+        });
+        
+        const submitQuizButton = document.querySelector('.submit-quiz');
+        if (submitQuizButton) {
+            submitQuizButton.addEventListener('click', () => {
+                // In a real implementation, this would validate answers and provide feedback
+                alert('Quiz submitted! Your results will be available soon.');
+            });
+        }
+        
+        // Initialize
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        drawParticles();
+    </script>
+</body>
+</html>

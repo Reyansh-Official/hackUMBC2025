@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Settings - FinScholars</title>
+    <style>
+        :root {
+            --primary-color: #00BFFF;
+            --secondary-color: #87CEFA;
+            --background-dark: #121212;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-color: #ffffff;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            color: #ffffff;
+        }
+        
+        .settings-header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+        }
+        
+        .settings-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #00BFFF;
+            margin-bottom: 10px;
+        }
+        
+        .settings-description {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .settings-nav {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            height: fit-content;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(0, 191, 255, 0.2);
+            color: #00BFFF;
+        }
+        
+        .settings-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00BFFF;
+        }
+        
+        .interests-container {
+            margin-top: 20px;
+        }
+        
+        .interest-tags-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .interest-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .interest-tag:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .interest-tag.selected {
+            background: rgba(0, 191, 255, 0.3);
+            border: 1px solid rgba(0, 191, 255, 0.7);
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        .save-button {
+            background: linear-gradient(to right, #00BFFF, #87CEFA);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        .save-button:hover {
+            box-shadow: 0 6px 20px rgba(0, 191, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .save-button:active {
+            transform: translateY(0);
+        }
+        
+        .save-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+        }
+        
+        .status-message.error {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff5555;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">FinScholars</div>
+            <nav class="nav-links">
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link">Modules</a>
+                <a href="#" class="nav-link">Settings</a>
+                <a href="#" class="nav-link">Profile</a>
+            </nav>
+        </header>
+        
+        <div class="settings-container">
+            <div class="settings-header">
+                <h1 class="settings-title">User Settings</h1>
+                <p class="settings-description">Manage your account preferences and personal information</p>
+            </div>
+            
+            <div class="settings-layout">
+                <div class="settings-nav">
+                    <div class="nav-item" data-section="profile">Profile</div>
+                    <div class="nav-item active" data-section="interests">My Interests</div>
+                    <div class="nav-item" data-section="notifications">Notifications</div>
+                    <div class="nav-item" data-section="privacy">Privacy</div>
+                    <div class="nav-item" data-section="appearance">Appearance</div>
+                </div>
+                
+                <div class="settings-content">
+                    <div class="settings-section" id="interests-section">
+                        <h2 class="section-title">My Interests</h2>
+                        <p>Select the financial topics you're interested in learning about. This helps us personalize your learning experience.</p>
+                        
+                        <div class="interests-container">
+                            <div class="interest-tags-grid" id="interests-grid">
+                                <!-- Interest tags will be added here dynamically -->
+                            </div>
+                            
+                            <button class="save-button" id="save-button" disabled>Save Changes</button>
+                            
+                            <div class="status-message" id="status-message"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section" id="profile-section" style="display: none;">
+                        <h2 class="section-title">Profile Settings</h2>
+                        <p>This section would contain profile settings.</p>
+                    </div>
+                    
+                    <div class="settings-section" id="notifications-section" style="display: none;">
+                        <h2 class="section-title">Notification Preferences</h2>
+                        <p>This section would contain notification settings.</p>
+                    </div>
+                    
+                    <div class="settings-section" id="privacy-section" style="display: none;">
+                        <h2 class="section-title">Privacy Settings</h2>
+                        <p>This section would contain privacy settings.</p>
+                    </div>
+                    
+                    <div class="settings-section" id="appearance-section" style="display: none;">
+                        <h2 class="section-title">Appearance Settings</h2>
+                        <p>This section would contain appearance settings.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Available interest categories
+        const interestCategories = [
+            "Budgeting",
+            "Investing",
+            "Retirement",
+            "Taxes",
+            "Credit Cards",
+            "Loans",
+            "Mortgages",
+            "Insurance",
+            "Saving",
+            "Debt Management",
+            "Stock Market",
+            "Real Estate",
+            "Cryptocurrency",
+            "Financial Planning",
+            "Banking",
+            "Personal Finance"
+        ];
+        
+        // User's current interests (mock data)
+        let selectedInterests = ["Budgeting", "Investing", "Saving", "Stock Market"];
+        let originalInterests = [...selectedInterests];
+        
+        // DOM Elements
+        const interestsGrid = document.getElementById('interests-grid');
+        const saveButton = document.getElementById('save-button');
+        const statusMessage = document.getElementById('status-message');
+        const navItems = document.querySelectorAll('.nav-item');
+        const settingsSections = document.querySelectorAll('.settings-section');
+        
+        // Initialize the page
+        function init() {
+            renderInterests();
+            setupNavigation();
+        }
+        
+        // Render interest tags
+        function renderInterests() {
+            interestsGrid.innerHTML = '';
+            
+            interestCategories.forEach(interest => {
+                const isSelected = selectedInterests.includes(interest);
+                const interestTag = document.createElement('div');
+                interestTag.className = `interest-tag${isSelected ? ' selected' : ''}`;
+                interestTag.textContent = interest;
+                interestTag.dataset.interest = interest;
+                
+                interestTag.addEventListener('click', () => toggleInterest(interest, interestTag));
+                
+                interestsGrid.appendChild(interestTag);
+            });
+            
+            updateSaveButton();
+        }
+        
+        // Toggle interest selection
+        function toggleInterest(interest, element) {
+            if (selectedInterests.includes(interest)) {
+                selectedInterests = selectedInterests.filter(item => item !== interest);
+                element.classList.remove('selected');
+            } else {
+                selectedInterests.push(interest);
+                element.classList.add('selected');
+            }
+            
+            updateSaveButton();
+        }
+        
+        // Update save button state
+        function updateSaveButton() {
+            const hasChanges = !arraysEqual(selectedInterests, originalInterests);
+            saveButton.disabled = !hasChanges;
+        }
+        
+        // Compare arrays
+        function arraysEqual(a, b) {
+            if (a.length !== b.length) return false;
+            const sortedA = [...a].sort();
+            const sortedB = [...b].sort();
+            return sortedA.every((val, i) => val === sortedB[i]);
+        }
+        
+        // Save interests
+        saveButton.addEventListener('click', async () => {
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving...';
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Update original interests
+                originalInterests = [...selectedInterests];
+                
+                // Show success message
+                statusMessage.className = 'status-message success';
+                statusMessage.textContent = 'Your interests have been updated successfully!';
+                statusMessage.style.display = 'block';
+                
+                // Hide message after 3 seconds
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 3000);
+            } catch (error) {
+                console.error('Error saving interests:', error);
+                
+                // Show error message
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = 'Failed to update your interests. Please try again.';
+                statusMessage.style.display = 'block';
+            } finally {
+                saveButton.textContent = 'Save Changes';
+                updateSaveButton();
+            }
+        });
+        
+        // Setup navigation
+        function setupNavigation() {
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Update active nav item
+                    navItems.forEach(navItem => navItem.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Show corresponding section
+                    const sectionId = `${item.dataset.section}-section`;
+                    settingsSections.forEach(section => {
+                        section.style.display = section.id === sectionId ? 'block' : 'none';
+                    });
+                });
+            });
+        }
+        
+        // Initialize the page
+        init();
+    </script>
+</body>
+</html>

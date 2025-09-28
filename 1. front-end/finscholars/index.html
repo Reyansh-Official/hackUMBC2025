@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinScholars</title>
+  <script src="connector.js"></script>
+  <style>
+    :root {
+      --color-background: #0a0e17;
+      --color-background-light: #141a29;
+      --color-text: #e6f1ff;
+      --color-text-secondary: #a2b3cd;
+      --color-accent: #4bcfea;
+      --color-accent-rich: #3a9fc5;
+      --color-error: #ff6b6b;
+      --color-success: #4cd964;
+      --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: var(--font-primary);
+      background-color: var(--color-background);
+      color: var(--color-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .home-page-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .home-content {
+      background: rgba(20, 26, 41, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 4rem;
+      width: 100%;
+      max-width: 90%;
+      height: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+    
+    .home-title {
+      font-size: 7rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+      background: linear-gradient(to right, var(--color-text), var(--color-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .home-subtitle {
+      color: var(--color-text-secondary);
+      margin-bottom: 3rem;
+      font-size: 2rem;
+    }
+    
+    .dashboard-button {
+      width: 65%;
+      background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-rich) 100%);
+      color: var(--color-background);
+      border: none;
+      border-radius: 14px;
+      padding: 1.5rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(75, 207, 234, 0.4);
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .dashboard-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(75, 207, 234, 0.6);
+    }
+    
+    .dashboard-button:active {
+      transform: translateY(1px);
+    }
+    
+    /* Background animation */
+    .background-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    /* Cursor animation */
+    .cursor {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(75, 207, 234, 0.2);
+      pointer-events: none;
+      mix-blend-mode: screen;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease;
+    }
+  </style>
+</head>
+<body>
+  <canvas class="background-animation"></canvas>
+  <div class="cursor" style="display: none;"></div>
+  
+  <div class="home-page-container">
+    <div class="home-content">
+      <h1 class="home-title">FinScholars</h1>
+      <p class="home-subtitle">Your journey to financial literacy starts here</p>
+      <a href="dashboard.html" class="dashboard-button">Go to Dashboard</a>
+    </div>
+  </div>
+  
+  <script>
+    // Redirect to dashboard if coming from another page
+    document.addEventListener('DOMContentLoaded', function() {
+      if (localStorage.getItem('returnToHome') === 'true') {
+        localStorage.removeItem('returnToHome');
+        window.location.href = 'dashboard.html';
+      }
+      
+      // Background animation
+      const canvas = document.querySelector('.background-animation');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      function createParticles() {
+        particles = [];
+        const particleCount = Math.floor(window.innerWidth / 20);
+        
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2 + 1,
+            color: `rgba(75, 207, 234, ${Math.random() * 0.5 + 0.1})`,
+            velocity: {
+              x: (Math.random() - 0.5) * 0.5,
+              y: (Math.random() - 0.5) * 0.5
+            }
+          });
+        }
+      }
+      
+      function drawParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, '#0a0e17');
+        gradient.addColorStop(1, '#141a29');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw particles
+        particles.forEach(particle => {
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+          ctx.fillStyle = particle.color;
+          ctx.fill();
+          
+          // Update position
+          particle.x += particle.velocity.x;
+          particle.y += particle.velocity.y;
+          
+          // Wrap around edges
+          if (particle.x < 0) particle.x = canvas.width;
+          if (particle.x > canvas.width) particle.x = 0;
+          if (particle.y < 0) particle.y = canvas.height;
+          if (particle.y > canvas.height) particle.y = 0;
+        });
+        
+        // Draw connections
+        ctx.strokeStyle = 'rgba(75, 207, 234, 0.05)';
+        ctx.lineWidth = 0.5;
+        
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 100) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        
+        requestAnimationFrame(drawParticles);
+      }
+      
+      // Initialize animation
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        createParticles();
+      });
+      
+      resizeCanvas();
+      createParticles();
+      drawParticles();
+      
+      // Cursor animation
+      const cursor = document.querySelector('.cursor');
+      
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.display = 'block';
+        cursor.style.left = `${e.clientX}px`;
+        cursor.style.top = `${e.clientY}px`;
+      });
+      
+      document.addEventListener('mouseout', () => {
+        cursor.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>

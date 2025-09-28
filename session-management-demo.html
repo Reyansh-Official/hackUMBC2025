@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Session Management Demo</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --secondary: #10B981;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1.5rem 0;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        header h1 {
+            margin: 0;
+            padding: 0 2rem;
+            font-size: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 0.5rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        button:hover {
+            background-color: var(--primary-light);
+        }
+        
+        button.secondary {
+            background-color: var(--secondary);
+        }
+        
+        button.secondary:hover {
+            background-color: #0DA271;
+        }
+        
+        button.danger {
+            background-color: var(--danger);
+        }
+        
+        button.danger:hover {
+            background-color: #DC2626;
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: #F3F4F6;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .user-card:hover {
+            background-color: #E5E7EB;
+        }
+        
+        .user-card.active {
+            background-color: #DBEAFE;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-info h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .user-info p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge.primary {
+            background-color: #DBEAFE;
+            color: var(--primary);
+        }
+        
+        .badge.success {
+            background-color: #D1FAE5;
+            color: var(--success);
+        }
+        
+        .badge.warning {
+            background-color: #FEF3C7;
+            color: var(--warning);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #E5E7EB;
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .log-container {
+            background-color: #1F2937;
+            color: #F9FAFB;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .log-entry.info {
+            color: #93C5FD;
+        }
+        
+        .log-entry.success {
+            color: #6EE7B7;
+        }
+        
+        .log-entry.warning {
+            color: #FCD34D;
+        }
+        
+        .log-entry.error {
+            color: #FCA5A5;
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .tag {
+            background-color: #F3F4F6;
+            padding: 0.5rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .tag:hover {
+            background-color: #E5E7EB;
+        }
+        
+        .tag.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .module-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .module-card:hover {
+            border-color: var(--primary-light);
+        }
+        
+        .module-card h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .module-card h4 span {
+            margin-left: auto;
+            font-size: 0.875rem;
+            font-weight: normal;
+        }
+        
+        .module-card h4 span.completed {
+            color: var(--success);
+        }
+        
+        .module-card h4 span.incomplete {
+            color: var(--warning);
+        }
+        
+        .device-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        .session-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background-color: #F3F4F6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .session-item .session-info {
+            flex: 1;
+        }
+        
+        .session-item .session-actions {
+            display: flex;
+        }
+        
+        .session-item .session-actions button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .timestamp {
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 8px;
+            background-color: var(--dark);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background-color: var(--success);
+        }
+        
+        .toast.error {
+            background-color: var(--danger);
+        }
+        
+        .toast.warning {
+            background-color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>User Session Management Demo</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h2>User Authentication</h2>
+                <div id="users-container">
+                    <div class="user-card" data-user-id="user1">
+                        <div class="avatar">JD</div>
+                        <div class="user-info">
+                            <h3>John Doe</h3>
+                            <p>john.doe@example.com</p>
+                        </div>
+                    </div>
+                    <div class="user-card" data-user-id="user2">
+                        <div class="avatar">JS</div>
+                        <div class="user-info">
+                            <h3>Jane Smith</h3>
+                            <p>jane.smith@example.com</p>
+                        </div>
+                    </div>
+                    <div class="user-card" data-user-id="user3">
+                        <div class="avatar">BJ</div>
+                        <div class="user-info">
+                            <h3>Bob Johnson</h3>
+                            <p>bob.johnson@example.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <button id="login-btn">Login</button>
+                    <button id="logout-btn" class="danger" disabled>Logout</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Active Sessions</h2>
+                <div id="sessions-container">
+                    <p>No active sessions</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>User Data</h2>
+            <div id="user-data-container">
+                <p>Please login to view user data</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>User Interactions</h2>
+            <div id="interactions-container">
+                <button id="complete-module-btn" disabled>Complete Module</button>
+                <button id="add-interest-btn" disabled>Update Interests</button>
+                <button id="earn-badge-btn" disabled>Earn Badge</button>
+                <button id="start-focus-btn" disabled>Start Focus Session</button>
+                <button id="end-focus-btn" class="danger" disabled>End Focus Session</button>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>System Log</h2>
+            <div class="log-container" id="log-container"></div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        // Mock database
+        const mockDatabase = {
+            users: {
+                user1: {
+                    id: 'user1',
+                    email: 'john.doe@example.com',
+                    display_name: 'John Doe',
+                    profile_image_url: null,
+                    interests: ['investing', 'retirement', 'budgeting'],
+                    modules: [
+                        { id: 'mod1', title: 'Introduction to Finance', completed: true },
+                        { id: 'mod2', title: 'Budgeting Basics', completed: false },
+                        { id: 'mod3', title: 'Investment Strategies', completed: false }
+                    ],
+                    badges: [
+                        { id: 'badge1', title: 'First Login', earned_at: '2023-05-15T10:30:00Z' }
+                    ],
+                    progress_percentage: 33,
+                    focus_mode_active: false,
+                    focus_sessions: [],
+                    settings: { theme: 'light', notifications: true },
+                    created_at: '2023-05-15T10:30:00Z',
+                    last_login: '2023-05-15T10:30:00Z'
+                },
+                user2: {
+                    id: 'user2',
+                    email: 'jane.smith@example.com',
+                    display_name: 'Jane Smith',
+                    profile_image_url: null,
+                    interests: ['stocks', 'crypto', 'taxes'],
+                    modules: [
+                        { id: 'mod1', title: 'Introduction to Finance', completed: true },
+                        { id: 'mod2', title: 'Budgeting Basics', completed: true },
+                        { id: 'mod4', title: 'Tax Planning', completed: false }
+                    ],
+                    badges: [
+                        { id: 'badge1', title: 'First Login', earned_at: '2023-04-10T14:20:00Z' },
+                        { id: 'badge2', title: 'Module Master', earned_at: '2023-04-15T09:45:00Z' }
+                    ],
+                    progress_percentage: 67,
+                    focus_mode_active: false,
+                    focus_sessions: [
+                        { start_time: '2023-04-12T15:30:00Z', end_time: '2023-04-12T16:30:00Z', duration_minutes: 60 }
+                    ],
+                    settings: { theme: 'dark', notifications: true },
+                    created_at: '2023-04-10T14:20:00Z',
+                    last_login: '2023-05-14T11:15:00Z'
+                },
+                user3: {
+                    id: 'user3',
+                    email: 'bob.johnson@example.com',
+                    display_name: 'Bob Johnson',
+                    profile_image_url: null,
+                    interests: ['retirement', 'insurance', 'estate-planning'],
+                    modules: [
+                        { id: 'mod1', title: 'Introduction to Finance', completed: true },
+                        { id: 'mod5', title: 'Retirement Planning', completed: true },
+                        { id: 'mod6', title: 'Estate Planning', completed: true }
+                    ],
+                    badges: [
+                        { id: 'badge1', title: 'First Login', earned_at: '2023-03-05T09:10:00Z' },
+                        { id: 'badge2', title: 'Module Master', earned_at: '2023-03-20T16:40:00Z' },
+                        { id: 'badge3', title: 'Finance Expert', earned_at: '2023-04-02T11:25:00Z' }
+                    ],
+                    progress_percentage: 100,
+                    focus_mode_active: false,
+                    focus_sessions: [
+                        { start_time: '2023-03-10T10:00:00Z', end_time: '2023-03-10T11:30:00Z', duration_minutes: 90 },
+                        { start_time: '2023-03-15T14:00:00Z', end_time: '2023-03-15T15:00:00Z', duration_minutes: 60 },
+                        { start_time: '2023-03-25T09:30:00Z', end_time: '2023-03-25T11:00:00Z', duration_minutes: 90 }
+                    ],
+                    settings: { theme: 'light', notifications: false },
+                    created_at: '2023-03-05T09:10:00Z',
+                    last_login: '2023-05-10T13:45:00Z'
+                }
+            },
+            interests: [
+                'investing', 'retirement', 'budgeting', 'stocks', 'bonds', 
+                'crypto', 'taxes', 'insurance', 'estate-planning', 'debt-management'
+            ],
+            badges: [
+                { id: 'badge1', title: 'First Login', description: 'Logged in for the first time' },
+                { id: 'badge2', title: 'Module Master', description: 'Completed 2 modules' },
+                { id: 'badge3', title: 'Finance Expert', description: 'Completed all modules' },
+                { id: 'badge4', title: 'Focus Champion', description: 'Completed 3 focus sessions' },
+                { id: 'badge5', title: 'Interest Explorer', description: 'Added 5 interests' }
+            ]
+        };
+        
+        // Session management
+        class SessionManager {
+            constructor() {
+                this.sessions = {};
+                this.sessionExpiry = {};
+            }
+            
+            createSession(userId) {
+                const sessionId = 'sess_' + Math.random().toString(36).substring(2, 15);
+                this.sessions[sessionId] = userId;
+                this.sessionExpiry[sessionId] = Date.now() + (30 * 60 * 1000); // 30 minutes
+                return sessionId;
+            }
+            
+            getSession(sessionId) {
+                if (!this.sessions[sessionId]) {
+                    return null;
+                }
+                
+                if (Date.now() > this.sessionExpiry[sessionId]) {
+                    this.endSession(sessionId);
+                    return null;
+                }
+                
+                this.refreshSessionExpiry(sessionId);
+                return this.sessions[sessionId];
+            }
+            
+            refreshSessionExpiry(sessionId) {
+                if (this.sessions[sessionId]) {
+                    this.sessionExpiry[sessionId] = Date.now() + (30 * 60 * 1000); // 30 minutes
+                }
+            }
+            
+            endSession(sessionId) {
+                delete this.sessions[sessionId];
+                delete this.sessionExpiry[sessionId];
+            }
+            
+            getActiveSessions(userId) {
+                return Object.entries(this.sessions)
+                    .filter(([_, id]) => id === userId)
+                    .map(([sessionId, _]) => ({
+                        id: sessionId,
+                        expiry: new Date(this.sessionExpiry[sessionId]).toLocaleString()
+                    }));
+            }
+            
+            getAllActiveSessions() {
+                return Object.entries(this.sessions).map(([sessionId, userId]) => ({
+                    id: sessionId,
+                    userId,
+                    expiry: new Date(this.sessionExpiry[sessionId]).toLocaleString()
+                }));
+            }
+        }
+        
+        // User Manager
+        class UserManager {
+            constructor() {
+                this.users = {};
+            }
+            
+            getUser(userId) {
+                if (!this.users[userId]) {
+                    // Load from "database"
+                    const userData = mockDatabase.users[userId];
+                    if (userData) {
+                        this.users[userId] = { ...userData };
+                    } else {
+                        return null;
+                    }
+                }
+                
+                return this.users[userId];
+            }
+            
+            updateUser(userId, data) {
+                if (this.users[userId]) {
+                    this.users[userId] = { ...this.users[userId], ...data };
+                    // In a real app, this would persist to the database
+                    mockDatabase.users[userId] = { ...mockDatabase.users[userId], ...data };
+                    return true;
+                }
+                return false;
+            }
+            
+            saveUserToDatabase(userId) {
+                if (this.users[userId]) {
+                    // Simulate saving to database
+                    mockDatabase.users[userId] = { ...this.users[userId] };
+                    return true;
+                }
+                return false;
+            }
+        }
+        
+        // Initialize managers
+        const sessionManager = new SessionManager();
+        const userManager = new UserManager();
+        
+        // UI Elements
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const completeModuleBtn = document.getElementById('complete-module-btn');
+        const addInterestBtn = document.getElementById('add-interest-btn');
+        const earnBadgeBtn = document.getElementById('earn-badge-btn');
+        const startFocusBtn = document.getElementById('start-focus-btn');
+        const endFocusBtn = document.getElementById('end-focus-btn');
+        const userCards = document.querySelectorAll('.user-card');
+        const sessionsContainer = document.getElementById('sessions-container');
+        const userDataContainer = document.getElementById('user-data-container');
+        const logContainer = document.getElementById('log-container');
+        const toast = document.getElementById('toast');
+        
+        // State
+        let currentUserId = null;
+        let currentSessionId = null;
+        
+        // Helper functions
+        function log(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+        
+        function updateUI() {
+            // Update user cards
+            userCards.forEach(card => {
+                card.classList.toggle('active', card.dataset.userId === currentUserId);
+            });
+            
+            // Update buttons
+            const loggedIn = currentSessionId !== null;
+            loginBtn.disabled = loggedIn;
+            logoutBtn.disabled = !loggedIn;
+            completeModuleBtn.disabled = !loggedIn;
+            addInterestBtn.disabled = !loggedIn;
+            earnBadgeBtn.disabled = !loggedIn;
+            startFocusBtn.disabled = !loggedIn;
+            endFocusBtn.disabled = !loggedIn || (currentUserId && !userManager.getUser(currentUserId).focus_mode_active);
+            
+            // Update sessions
+            updateSessionsUI();
+            
+            // Update user data
+            updateUserDataUI();
+        }
+        
+        function updateSessionsUI() {
+            if (!currentUserId) {
+                sessionsContainer.innerHTML = '<p>No active sessions</p>';
+                return;
+            }
+            
+            const activeSessions = sessionManager.getActiveSessions(currentUserId);
+            
+            if (activeSessions.length === 0) {
+                sessionsContainer.innerHTML = '<p>No active sessions</p>';
+                return;
+            }
+            
+            let html = '';
+            activeSessions.forEach(session => {
+                html += `
+                    <div class="session-item">
+                        <div class="session-info">
+                            <div>Session ID: ${session.id.substring(0, 8)}...</div>
+                            <div class="timestamp">Expires: ${session.expiry}</div>
+                        </div>
+                        <div class="session-actions">
+                            <button class="danger" onclick="endSession('${session.id}')">End Session</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            sessionsContainer.innerHTML = html;
+        }
+        
+        function updateUserDataUI() {
+            if (!currentUserId) {
+                userDataContainer.innerHTML = '<p>Please login to view user data</p>';
+                return;
+            }
+            
+            const user = userManager.getUser(currentUserId);
+            
+            let html = `
+                <h3>${user.display_name}</h3>
+                <p>${user.email}</p>
+                
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: ${user.progress_percentage}%"></div>
+                </div>
+                <p>Progress: ${user.progress_percentage}%</p>
+                
+                <h4>Interests</h4>
+                <div class="tag-container">
+                    ${user.interests.map(interest => `<div class="tag selected">${interest}</div>`).join('')}
+                </div>
+                
+                <h4>Modules</h4>
+                ${user.modules.map(module => `
+                    <div class="module-card">
+                        <h4>
+                            ${module.title}
+                            <span class="${module.completed ? 'completed' : 'incomplete'}">
+                                ${module.completed ? 'Completed' : 'Incomplete'}
+                            </span>
+                        </h4>
+                    </div>
+                `).join('')}
+                
+                <h4>Badges</h4>
+                <div>
+                    ${user.badges.map(badge => `
+                        <span class="badge primary">${badge.title}</span>
+                    `).join('')}
+                </div>
+                
+                <h4>Focus Sessions</h4>
+                ${user.focus_sessions.length > 0 ? 
+                    user.focus_sessions.map(session => `
+                        <div class="session-item">
+                            <div class="session-info">
+                                <div>Duration: ${session.duration_minutes} minutes</div>
+                                <div class="timestamp">
+                                    ${new Date(session.start_time).toLocaleString()} - 
+                                    ${new Date(session.end_time).toLocaleString()}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : 
+                    '<p>No focus sessions yet</p>'
+                }
+            `;
+            
+            userDataContainer.innerHTML = html;
+        }
+        
+        // Event handlers
+        function selectUser(userId) {
+            currentUserId = userId;
+            updateUI();
+        }
+        
+        function login() {
+            if (!currentUserId) {
+                showToast('Please select a user first', 'warning');
+                return;
+            }
+            
+            // Simulate API delay
+            loginBtn.innerHTML = '<span class="loading"></span>Logging in...';
+            loginBtn.disabled = true;
+            
+            setTimeout(() => {
+                const user = userManager.getUser(currentUserId);
+                if (user) {
+                    currentSessionId = sessionManager.createSession(currentUserId);
+                    user.last_login = new Date().toISOString();
+                    userManager.updateUser(currentUserId, { last_login: user.last_login });
+                    
+                    log(`User ${user.display_name} logged in`, 'success');
+                    log(`Session created: ${currentSessionId}`, 'info');
+                    showToast('Login successful');
+                    
+                    // Simulate loading user data from database
+                    log('Loading user data from database...', 'info');
+                    log('User data loaded and cached in memory', 'success');
+                } else {
+                    log(`Failed to login: User not found`, 'error');
+                    showToast('Login failed: User not found', 'error');
+                }
+                
+                loginBtn.innerHTML = 'Login';
+                loginBtn.disabled = false;
+                updateUI();
+            }, 1000);
+        }
+        
+        function logout() {
+            if (!currentSessionId) {
+                showToast('No active session', 'warning');
+                return;
+            }
+            
+            // Simulate API delay
+            logoutBtn.innerHTML = '<span class="loading"></span>Logging out...';
+            logoutBtn.disabled = true;
+            
+            setTimeout(() => {
+                const user = userManager.getUser(currentUserId);
+                
+                // Save any pending changes to database
+                log('Saving user data to database...', 'info');
+                userManager.saveUserToDatabase(currentUserId);
+                log('User data saved to database', 'success');
+                
+                // End session
+                sessionManager.endSession(currentSessionId);
+                log(`User ${user.display_name} logged out`, 'info');
+                log(`Session ended: ${currentSessionId}`, 'info');
+                showToast('Logout successful');
+                
+                currentSessionId = null;
+                logoutBtn.innerHTML = 'Logout';
+                logoutBtn.disabled = false;
+                updateUI();
+            }, 1000);
+        }
+        
+        function endSession(sessionId) {
+            sessionManager.endSession(sessionId);
+            log(`Session ended: ${sessionId}`, 'info');
+            
+            if (sessionId === currentSessionId) {
+                currentSessionId = null;
+            }
+            
+            updateUI();
+        }
+        
+        function completeModule() {
+            if (!currentSessionId) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+            
+            const user = userManager.getUser(currentUserId);
+            
+            // Find first incomplete module
+            const incompleteModule = user.modules.find(module => !module.completed);
+            
+            if (!incompleteModule) {
+                showToast('All modules already completed', 'warning');
+                return;
+            }
+            
+            // Simulate API delay
+            completeModuleBtn.innerHTML = '<span class="loading"></span>Completing...';
+            completeModuleBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Update module status
+                incompleteModule.completed = true;
+                
+                // Recalculate progress
+                const completedCount = user.modules.filter(module => module.completed).length;
+                const totalCount = user.modules.length;
+                const progress = Math.round((completedCount / totalCount) * 100);
+                
+                // Update user
+                userManager.updateUser(currentUserId, {
+                    modules: user.modules,
+                    progress_percentage: progress
+                });
+                
+                log(`Module "${incompleteModule.title}" marked as completed`, 'success');
+                log(`Progress updated to ${progress}%`, 'info');
+                log('Changes applied to User instance in memory', 'info');
+                log('Saving changes to database...', 'info');
+                
+                // Simulate saving to database
+                setTimeout(() => {
+                    userManager.saveUserToDatabase(currentUserId);
+                    log('Data persisted to database', 'success');
+                    showToast(`Module "${incompleteModule.title}" completed`);
+                    
+                    // Check if all modules completed
+                    if (completedCount === totalCount && !user.badges.some(badge => badge.id === 'badge3')) {
+                        earnBadge('badge3');
+                    } else if (completedCount >= 2 && !user.badges.some(badge => badge.id === 'badge2')) {
+                        earnBadge('badge2');
+                    }
+                    
+                    completeModuleBtn.innerHTML = 'Complete Module';
+                    completeModuleBtn.disabled = false;
+                    updateUI();
+                }, 500);
+            }, 1000);
+        }
+        
+        function updateInterests() {
+            if (!currentSessionId) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+            
+            const user = userManager.getUser(currentUserId);
+            const allInterests = mockDatabase.interests;
+            
+            // Create modal for interest selection
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = '1000';
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.backgroundColor = 'white';
+            modalContent.style.padding = '2rem';
+            modalContent.style.borderRadius = '12px';
+            modalContent.style.width = '500px';
+            modalContent.style.maxWidth = '90%';
+            
+            modalContent.innerHTML = `
+                <h3>Update Interests</h3>
+                <p>Select your financial interests:</p>
+                <div class="tag-container">
+                    ${allInterests.map(interest => `
+                        <div class="tag ${user.interests.includes(interest) ? 'selected' : ''}" 
+                             data-interest="${interest}">
+                            ${interest}
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 1.5rem; text-align: right;">
+                    <button id="cancel-interests">Cancel</button>
+                    <button id="save-interests" class="secondary">Save</button>
+                </div>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Add event listeners
+            const tags = modalContent.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.addEventListener('click', () => {
+                    tag.classList.toggle('selected');
+                });
+            });
+            
+            document.getElementById('cancel-interests').addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            document.getElementById('save-interests').addEventListener('click', () => {
+                const selectedInterests = Array.from(modalContent.querySelectorAll('.tag.selected'))
+                    .map(tag => tag.dataset.interest);
+                
+                // Update user
+                log('Updating user interests...', 'info');
+                userManager.updateUser(currentUserId, {
+                    interests: selectedInterests
+                });
+                
+                log(`Interests updated to: ${selectedInterests.join(', ')}`, 'success');
+                log('Changes applied to User instance in memory', 'info');
+                log('Saving changes to database...', 'info');
+                
+                // Simulate saving to database
+                setTimeout(() => {
+                    userManager.saveUserToDatabase(currentUserId);
+                    log('Data persisted to database', 'success');
+                    showToast('Interests updated successfully');
+                    
+                    // Check if badge should be awarded
+                    if (selectedInterests.length >= 5 && !user.badges.some(badge => badge.id === 'badge5')) {
+                        earnBadge('badge5');
+                    }
+                    
+                    document.body.removeChild(modal);
+                    updateUI();
+                }, 500);
+            });
+        }
+        
+        function earnBadge(badgeId = null) {
+            if (!currentSessionId) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+            
+            const user = userManager.getUser(currentUserId);
+            
+            // If no badge ID provided, find a badge the user doesn't have
+            if (!badgeId) {
+                const availableBadges = mockDatabase.badges
+                    .filter(badge => !user.badges.some(userBadge => userBadge.id === badge.id));
+                
+                if (availableBadges.length === 0) {
+                    showToast('No more badges available', 'warning');
+                    return;
+                }
+                
+                badgeId = availableBadges[0].id;
+            }
+            
+            // Check if user already has this badge
+            if (user.badges.some(badge => badge.id === badgeId)) {
+                if (!badgeId) {
+                    showToast('User already has this badge', 'warning');
+                }
+                return;
+            }
+            
+            // Get badge details
+            const badge = mockDatabase.badges.find(b => b.id === badgeId);
+            
+            if (!badge) {
+                showToast('Badge not found', 'error');
+                return;
+            }
+            
+            // Simulate API delay
+            if (!badgeId) {
+                earnBadgeBtn.innerHTML = '<span class="loading"></span>Earning...';
+                earnBadgeBtn.disabled = true;
+            }
+            
+            setTimeout(() => {
+                // Add badge to user
+                const newBadge = {
+                    id: badge.id,
+                    title: badge.title,
+                    earned_at: new Date().toISOString()
+                };
+                
+                user.badges.push(newBadge);
+                userManager.updateUser(currentUserId, {
+                    badges: user.badges
+                });
+                
+                log(`Badge "${badge.title}" earned`, 'success');
+                log('Changes applied to User instance in memory', 'info');
+                log('Saving changes to database...', 'info');
+                
+                // Simulate saving to database
+                setTimeout(() => {
+                    userManager.saveUserToDatabase(currentUserId);
+                    log('Data persisted to database', 'success');
+                    showToast(`Badge "${badge.title}" earned!`);
+                    
+                    if (!badgeId) {
+                        earnBadgeBtn.innerHTML = 'Earn Badge';
+                        earnBadgeBtn.disabled = false;
+                    }
+                    
+                    updateUI();
+                }, 500);
+            }, 1000);
+        }
+        
+        function startFocusSession() {
+            if (!currentSessionId) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+            
+            const user = userManager.getUser(currentUserId);
+            
+            if (user.focus_mode_active) {
+                showToast('Focus session already active', 'warning');
+                return;
+            }
+            
+            // Simulate API delay
+            startFocusBtn.innerHTML = '<span class="loading"></span>Starting...';
+            startFocusBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Update user
+                const startTime = new Date().toISOString();
+                userManager.updateUser(currentUserId, {
+                    focus_mode_active: true,
+                    focus_session_start: startTime
+                });
+                
+                log('Focus session started', 'success');
+                log('Changes applied to User instance in memory', 'info');
+                log('Saving changes to database...', 'info');
+                
+                // Simulate saving to database
+                setTimeout(() => {
+                    userManager.saveUserToDatabase(currentUserId);
+                    log('Data persisted to database', 'success');
+                    showToast('Focus session started');
+                    
+                    startFocusBtn.innerHTML = 'Start Focus Session';
+                    startFocusBtn.disabled = false;
+                    endFocusBtn.disabled = false;
+                    updateUI();
+                }, 500);
+            }, 1000);
+        }
+        
+        function endFocusSession() {
+            if (!currentSessionId) {
+                showToast('Please login first', 'warning');
+                return;
+            }
+            
+            const user = userManager.getUser(currentUserId);
+            
+            if (!user.focus_mode_active) {
+                showToast('No active focus session', 'warning');
+                return;
+            }
+            
+            // Simulate API delay
+            endFocusBtn.innerHTML = '<span class="loading"></span>Ending...';
+            endFocusBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Calculate duration
+                const startTime = new Date(user.focus_session_start);
+                const endTime = new Date();
+                const durationMinutes = Math.round((endTime - startTime) / (1000 * 60));
+                
+                // Create focus session record
+                const focusSession = {
+                    start_time: user.focus_session_start,
+                    end_time: endTime.toISOString(),
+                    duration_minutes: durationMinutes
+                };
+                
+                // Update user
+                const updatedFocusSessions = [focusSession, ...(user.focus_sessions || [])];
+                userManager.updateUser(currentUserId, {
+                    focus_mode_active: false,
+                    focus_session_start: null,
+                    focus_sessions: updatedFocusSessions
+                });
+                
+                log(`Focus session ended (${durationMinutes} minutes)`, 'success');
+                log('Changes applied to User instance in memory', 'info');
+                log('Saving changes to database...', 'info');
+                
+                // Simulate saving to database
+                setTimeout(() => {
+                    userManager.saveUserToDatabase(currentUserId);
+                    log('Data persisted to database', 'success');
+                    showToast(`Focus session ended (${durationMinutes} minutes)`);
+                    
+                    // Check if badge should be awarded
+                    if (updatedFocusSessions.length >= 3 && !user.badges.some(badge => badge.id === 'badge4')) {
+                        earnBadge('badge4');
+                    }
+                    
+                    endFocusBtn.innerHTML = 'End Focus Session';
+                    endFocusBtn.disabled = true;
+                    updateUI();
+                }, 500);
+            }, 1000);
+        }
+        
+        // Event listeners
+        loginBtn.addEventListener('click', login);
+        logoutBtn.addEventListener('click', logout);
+        completeModuleBtn.addEventListener('click', completeModule);
+        addInterestBtn.addEventListener('click', updateInterests);
+        earnBadgeBtn.addEventListener('click', () => earnBadge());
+        startFocusBtn.addEventListener('click', startFocusSession);
+        endFocusBtn.addEventListener('click', endFocusSession);
+        
+        userCards.forEach(card => {
+            card.addEventListener('click', () => {
+                selectUser(card.dataset.userId);
+            });
+        });
+        
+        // Initialize
+        log('Session Management Demo initialized', 'info');
+        log('Select a user and click Login to begin', 'info');
+        
+        // Make functions available globally
+        window.endSession = endSession;
+    </script>
+</body>
+</html>

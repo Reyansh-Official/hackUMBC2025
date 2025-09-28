@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Finance</title>
+  <script src="fix-duplicates.js"></script>
+  <script src="generate_module_content.js"></script>
+    <style>
+        :root {
+            --color-primary: #0a192f;
+            --color-secondary: #172a45;
+            --color-accent: #4bcfea;
+            --color-text: #e6f1ff;
+            --color-success: #00e676;
+            --color-error: #ff4c4c;
+            --glass-background: rgba(23, 42, 69, 0.7);
+            --glass-border: 1px solid rgba(75, 207, 234, 0.3);
+            --glass-glow: 0 0 20px rgba(75, 207, 234, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+            color: var(--color-text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--color-accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--color-accent);
+        }
+
+        .module-container {
+            background: var(--glass-background);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-glow);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .module-title {
+            font-size: 2rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-description {
+            color: rgba(230, 241, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .content-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+        
+        /* Styles for submodules and quizzes */
+        .submodule-item {
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .submodule-item.locked {
+            opacity: 0.7;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .submodule-title {
+            font-size: 1.5rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+        
+        .submodule-text {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .locked-message {
+            color: #ff9800;
+            font-style: italic;
+            padding: 1rem;
+        }
+        
+        /* Quiz styles */
+        .quiz-container {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        
+        .quiz-title {
+            font-size: 1.3rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+        
+        .quiz-description {
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        
+        .quiz-question {
+            margin-bottom: 1.5rem;
+        }
+        
+        .quiz-options {
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+        }
+        
+        .quiz-option {
+            margin-bottom: 0.5rem;
+        }
+        
+        .quiz-submit {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-submit:hover {
+            background-color: #3aa8c1;
+        }
+        
+        .quiz-results {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-message {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-message.success {
+            color: var(--color-success);
+        }
+        
+        .result-message.failure {
+            color: var(--color-error);
+        }
+        
+        .retry-quiz, .next-submodule {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-quiz:hover, .next-submodule:hover {
+            background-color: #3aa8c1;
+            font-size: 1.5rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+
+        .section-content {
+            line-height: 1.6;
+        }
+
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background-color: rgba(75, 207, 234, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .back-button {
+            background-color: transparent;
+            border: 1px solid var(--color-accent);
+            color: var(--color-accent);
+            margin-right: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: rgba(75, 207, 234, 0.1);
+        }
+
+        .quiz-button {
+            margin-top: 2rem;
+        }
+
+        .submodule-nav {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(75, 207, 234, 0.3);
+            padding-bottom: 1rem;
+        }
+
+        .submodule-button {
+            background: transparent;
+            color: var(--color-text);
+            border: none;
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .submodule-button.active {
+            background: rgba(75, 207, 234, 0.2);
+            color: var(--color-accent);
+        }
+
+        .submodule-button:hover:not(.active) {
+            background: rgba(75, 207, 234, 0.1);
+        }
+
+        .submodule-button.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .submodule-button.completed {
+            background: rgba(0, 230, 118, 0.2);
+            color: var(--color-success);
+        }
+        
+        .submodule-button.completed::after {
+            content: "✓";
+            margin-left: 5px;
+        }
+
+        .submodule {
+            display: none;
+        }
+
+        .submodule.active {
+            display: block;
+        }
+
+        /* Quiz styles */
+        .quiz-container {
+            display: none;
+            background: var(--glass-background);
+            border: var(--glass-border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .quiz-container.active {
+            display: block;
+        }
+
+        .quiz-question {
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            background: rgba(23, 42, 69, 0.5);
+            border: 1px solid rgba(75, 207, 234, 0.2);
+            border-radius: 6px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover {
+            background: rgba(75, 207, 234, 0.1);
+        }
+
+        .quiz-option.selected {
+            background: rgba(75, 207, 234, 0.2);
+            border-color: var(--color-accent);
+        }
+
+        .quiz-result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+
+        .quiz-result.success {
+            background: rgba(0, 230, 118, 0.2);
+            border: 1px solid var(--color-success);
+        }
+
+        .quiz-result.failure {
+            background: rgba(255, 76, 76, 0.2);
+            border: 1px solid var(--color-error);
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(75, 207, 234, 0.2);
+        }
+
+        .progress-dot.active {
+            background: var(--color-accent);
+        }
+
+        .progress-dot.completed {
+            background-color: var(--color-success);
+        }
+        
+        .completion-message {
+            background-color: rgba(0, 230, 118, 0.1);
+            border: 1px solid var(--color-success);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .success-icon {
+            background-color: var(--color-success);
+            color: var(--color-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+        
+        .next-submodule-btn {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        
+        .next-submodule-btn:hover {
+            background-color: #3aa8c1;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">FinScholars</div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="profile.html" class="nav-link">Profile</a>
+            <a href="index.html" class="nav-link" onclick="localStorage.setItem('returnToHome', 'true')">Home</a>
+            <a href="login.html" class="nav-link">Logout</a>
+        </div>
+    </div>
+
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 class="module-title" id="module-title">Module Title</h1>
+                <p class="module-description" id="module-description">Module description will appear here.</p>
+            </div>
+            <a href="dashboard.html" class="button back-button">Back to Dashboard</a>
+        </div>
+
+        <div class="progress-indicator" id="progress-indicator">
+            <!-- Progress dots will be added dynamically -->
+        </div>
+
+        <div class="submodule-nav" id="submodule-nav">
+            <!-- Submodule buttons will be added dynamically -->
+        </div>
+
+        <div id="submodules-container">
+            <!-- Submodules will be added dynamically -->
+        </div>
+
+        <button id="take-quiz-button" class="button quiz-button">Take Quiz</button>
+
+        <div id="quiz-container" class="quiz-container">
+            <h2 class="section-title">Quiz</h2>
+            <div id="quiz-questions">
+                <!-- Quiz questions will be added dynamically -->
+            </div>
+            <div id="quiz-result" class="quiz-result">
+                <!-- Quiz result will be shown here -->
+            </div>
+            <button id="submit-quiz-button" class="button" style="margin-top: 1.5rem;">Submit Answers</button>
+        </div>
+    </div>
+
+    <script>
+        // Clear any cached data
+        localStorage.removeItem('cachedModuleData');
+        
+        // Get module ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const moduleId = urlParams.get('id');
+        
+        // Module data (in a real app, this would come from an API)
+        const modules = [
+            {
+                id: "3",
+                title: "Introduction to Finance",
+                description: "Learn the fundamental concepts and principles of finance to build a strong financial foundation.",
+                submodules: [
+                    {
+                        id: "3-1",
+                        title: "Understanding Financial Fundamentals",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Core Financial Concepts</h2>
+                                <div class="section-content">
+                                    <p>Finance is the study of money management and the process of acquiring needed funds. Understanding fundamental financial concepts is crucial for building a strong financial foundation.</p>
+                                    
+                                    <h3>Personal Finance</h3>
+                                    <p>Personal finance involves managing individual or family financial resources to achieve financial goals. Key components include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Budgeting:</strong> Planning how to spend and save money</li>
+                                        <li><strong>Saving:</strong> Setting aside money for future needs and emergencies</li>
+                                        <li><strong>Debt Management:</strong> Strategies to reduce and eliminate debt</li>
+                                    </ul>
+                                    
+                                    <h3>Financial Planning</h3>
+                                    <p>Financial planning is the process of setting goals, creating a plan to achieve them, and regularly reviewing progress. Essential components include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Emergency Fund:</strong> Savings set aside for unexpected expenses</li>
+                                        <li><strong>Retirement Planning:</strong> Saving and investing for future needs</li>
+                                        <li><strong>Risk Management:</strong> Using insurance to protect against financial losses</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "Which of the following is a key component of personal finance?",
+                                options: [
+                                    "Corporate restructuring",
+                                    "Budgeting",
+                                    "Monetary policy",
+                                    "Foreign exchange"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "What is the purpose of an emergency fund?",
+                                options: [
+                                    "To maximize investment returns",
+                                    "To reduce tax liability",
+                                    "To cover unexpected expenses",
+                                    "To increase credit score"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Why might investors choose government bonds?",
+                                options: [
+                                    "For the highest possible returns",
+                                    "For relatively lower risk compared to stocks",
+                                    "For tax-free gains in all cases",
+                                    "For short-term trading opportunities"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which investment type typically offers the highest potential returns over the long term?",
+                                options: [
+                                    "Savings accounts",
+                                    "Government bonds",
+                                    "Corporate bonds",
+                                    "Stocks"
+                                ],
+                                correctAnswer: 3
+                            },
+                            {
+                                question: "What is diversification in investing?",
+                                options: [
+                                    "Putting all your money in the safest possible investment",
+                                    "Investing only in well-known companies",
+                                    "Spreading investments across various asset classes to reduce risk",
+                                    "Frequently trading to maximize returns"
+                                ],
+                                correctAnswer: 2
+                            }
+                        ]
+                    },
+                    {
+                        id: "3-2",
+                        title: "Debt Repayment Strategies",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Effective Debt Repayment Methods</h2>
+                                <div class="section-content">
+                                    <h3>The Debt Avalanche Method</h3>
+                                    <p>The debt avalanche method focuses on paying off debts with the highest interest rates first, which saves you the most money in interest over time.</p>
+                                    <p><strong>Steps:</strong></p>
+                                    <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li>List all your debts and their interest rates</li>
+                                        <li>Make minimum payments on all debts</li>
+                                        <li>Put extra money toward the debt with the highest interest rate</li>
+                                        <li>Once that debt is paid off, move to the debt with the next highest rate</li>
+                                    </ol>
+                                    
+                                    <h3>The Debt Snowball Method</h3>
+                                    <p>The debt snowball method focuses on paying off the smallest debts first, regardless of interest rate, to build momentum and motivation.</p>
+                                    <p><strong>Steps:</strong></p>
+                                    <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li>List all your debts by balance, smallest to largest</li>
+                                        <li>Make minimum payments on all debts</li>
+                                        <li>Put extra money toward the smallest debt</li>
+                                        <li>Once that debt is paid off, move to the next smallest</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="content-section">
+                                <h2 class="section-title">Debt Consolidation</h2>
+                                <div class="section-content">
+                                    <p>Debt consolidation involves combining multiple debts into a single loan, ideally with a lower interest rate.</p>
+                                    
+                                    <h3>Methods of Debt Consolidation</h3>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Personal Consolidation Loans:</strong> Unsecured loans used to pay off multiple debts</li>
+                                        <li><strong>Balance Transfer Credit Cards:</strong> Cards with low or 0% introductory APR for transferring balances</li>
+                                        <li><strong>Home Equity Loans:</strong> Using your home's equity to consolidate debt</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "Which debt repayment strategy focuses on paying off the debt with the highest interest rate first?",
+                                options: [
+                                    "Debt snowball",
+                                    "Debt avalanche",
+                                    "Debt consolidation",
+                                    "Debt settlement"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "What is the main psychological advantage of the debt snowball method?",
+                                options: [
+                                    "It saves the most money in interest",
+                                    "It improves your credit score faster",
+                                    "It provides quick wins by paying off small debts first",
+                                    "It reduces your monthly payments immediately"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is debt consolidation?",
+                                options: [
+                                    "Negotiating with creditors to accept less than what you owe",
+                                    "Combining multiple debts into a single loan",
+                                    "Declaring bankruptcy to eliminate debts",
+                                    "Paying off debts in order of smallest to largest"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of the following is a potential disadvantage of debt consolidation?",
+                                options: [
+                                    "It always increases your interest rates",
+                                    "It makes tracking your debts more complicated",
+                                    "It may extend your repayment period",
+                                    "It immediately damages your credit score"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "When using the debt avalanche method, after paying off the highest-interest debt, what should you do next?",
+                                options: [
+                                    "Start spending the extra money",
+                                    "Move to the debt with the next highest interest rate",
+                                    "Switch to the debt snowball method",
+                                    "Apply for debt consolidation"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    },
+                    {
+                        id: "3-3",
+                        title: "Building a Debt-Free Future",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Creating a Debt Management Plan</h2>
+                                <div class="section-content">
+                                    <p>A comprehensive debt management plan helps you systematically eliminate debt and stay debt-free.</p>
+                                    
+                                    <h3>Steps to Create Your Plan</h3>
+                                    <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Take Inventory:</strong> List all debts with balances, interest rates, and minimum payments</li>
+                                        <li><strong>Create a Budget:</strong> Track income and expenses to find extra money for debt repayment</li>
+                                        <li><strong>Choose a Strategy:</strong> Decide between avalanche, snowball, or consolidation</li>
+                                        <li><strong>Set Timeline Goals:</strong> Establish realistic targets for becoming debt-free</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            
+                            <div class="content-section">
+                                <h2 class="section-title">Staying Debt-Free</h2>
+                                <div class="section-content">
+                                    <h3>Lifestyle Changes</h3>
+                                    <p>Maintaining a debt-free life often requires adjusting spending habits and priorities:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Live Below Your Means:</strong> Spend less than you earn</li>
+                                        <li><strong>Use Cash or Debit:</strong> Avoid credit for purchases you can't afford</li>
+                                        <li><strong>Wait 24-48 Hours:</strong> Delay non-essential purchases to avoid impulse buying</li>
+                                    </ul>
+                                    
+                                    <h3>Financial Freedom Benefits</h3>
+                                    <p>Becoming debt-free opens doors to financial opportunities:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li>Increased saving and investing potential</li>
+                                        <li>Reduced financial stress and improved mental health</li>
+                                        <li>Greater career flexibility and entrepreneurship options</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "Why is it important to build a small emergency fund while paying off debt?",
+                                options: [
+                                    "To have money for vacations",
+                                    "To invest in the stock market",
+                                    "To avoid new debt when emergencies arise",
+                                    "To pay off debt faster"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is a recommended practice for staying debt-free?",
+                                options: [
+                                    "Using credit cards for all purchases to maximize rewards",
+                                    "Living at exactly your means (spending equals income)",
+                                    "Taking out small loans regularly to maintain credit score",
+                                    "Living below your means (spending less than income)"
+                                ],
+                                correctAnswer: 3
+                            },
+                            {
+                                question: "What is the first step in creating a debt management plan?",
+                                options: [
+                                    "Applying for debt consolidation",
+                                    "Taking inventory of all your debts",
+                                    "Cutting up all credit cards",
+                                    "Filing for bankruptcy"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "How can credit cards be used responsibly?",
+                                options: [
+                                    "By maintaining a small balance to build credit",
+                                    "By paying only the minimum payment each month",
+                                    "By paying the full balance each month",
+                                    "By transferring balances between cards regularly"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Which of the following is a benefit of becoming debt-free?",
+                                options: [
+                                    "Lower credit score",
+                                    "Increased saving and investing potential",
+                                    "Less flexibility in career choices",
+                                    "Higher monthly expenses"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "1",
+                title: "Introduction to Finance",
+                description: "Learn the fundamentals of finance and basic concepts to build your knowledge foundation.",
+                submodules: [
+                    {
+                        id: "1-1",
+                        title: "Financial Basics",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">What is Finance?</h2>
+                                <div class="section-content">
+                                    <p>Finance is the study of money management and the process of acquiring needed funds. It encompasses the dynamics of assets and liabilities over time under conditions of different degrees of uncertainty and risk.</p>
+                                    <p>Finance can be divided into three main categories:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Personal Finance:</strong> Managing individual or family financial decisions, including budgeting, saving, investing, and planning for retirement.</li>
+                                        <li><strong>Corporate Finance:</strong> Managing a company's money, including financial planning, investments, capital structure, and funding sources.</li>
+                                        <li><strong>Public Finance:</strong> Managing government revenue, expenditure, and debt issuance.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Financial Literacy</h2>
+                                <div class="section-content">
+                                    <p>Financial literacy is the ability to understand and effectively use various financial skills, including personal financial management, budgeting, and investing.</p>
+                                    <p>Key components of financial literacy include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li>Understanding income and expenses</li>
+                                        <li>Knowing how to budget and save</li>
+                                        <li>Managing debt responsibly</li>
+                                        <li>Planning for future financial needs</li>
+                                        <li>Understanding financial products and services</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What are the three main categories of finance?",
+                                options: [
+                                    "Personal, Corporate, and Public Finance",
+                                    "Saving, Investing, and Spending",
+                                    "Stocks, Bonds, and Real Estate",
+                                    "Income, Expenses, and Assets"
+                                ],
+                                correctAnswer: 0
+                            },
+                            {
+                                question: "Financial literacy includes the ability to:",
+                                options: [
+                                    "Predict stock market trends with 100% accuracy",
+                                    "Avoid all forms of debt",
+                                    "Understand and effectively use financial skills",
+                                    "Make high-risk investments for maximum returns"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Which of the following is NOT a key component of financial literacy?",
+                                options: [
+                                    "Understanding income and expenses",
+                                    "Managing debt responsibly",
+                                    "Predicting market crashes",
+                                    "Planning for future financial needs"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Personal finance involves:",
+                                options: [
+                                    "Managing government revenue",
+                                    "Individual or family financial decisions",
+                                    "Corporate capital structure",
+                                    "Public debt issuance"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which statement best describes finance?",
+                                options: [
+                                    "The study of money management and acquiring needed funds",
+                                    "The process of avoiding all financial risks",
+                                    "The art of predicting market movements",
+                                    "The practice of maximizing debt to increase wealth"
+                                ],
+                                correctAnswer: 0
+                            }
+                        ]
+                    },
+                    {
+                        id: "1-2",
+                        title: "Income & Expenses",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Understanding Income</h2>
+                                <div class="section-content">
+                                    <p>Income is the money you receive from various sources. It's the foundation of your financial life and understanding your income is crucial for effective financial planning.</p>
+                                    <p>Types of income include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Earned Income:</strong> Money received from employment (salary, wages, tips, commissions)</li>
+                                        <li><strong>Passive Income:</strong> Money earned with minimal effort (rental income, dividends, interest)</li>
+                                        <li><strong>Portfolio Income:</strong> Earnings from investments (capital gains, dividends)</li>
+                                        <li><strong>Other Income:</strong> Gifts, inheritances, alimony, etc.</li>
+                                    </ul>
+                                    <p>Understanding your gross income (before taxes) versus net income (after taxes) is essential for accurate budgeting.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Managing Expenses</h2>
+                                <div class="section-content">
+                                    <p>Expenses are the costs you incur in your daily life. Tracking and categorizing expenses helps you understand where your money goes and identify areas for potential savings.</p>
+                                    <p>Expenses typically fall into these categories:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Fixed Expenses:</strong> Consistent monthly costs (rent/mortgage, car payments, insurance)</li>
+                                        <li><strong>Variable Expenses:</strong> Costs that change month to month (groceries, utilities, entertainment)</li>
+                                        <li><strong>Discretionary Expenses:</strong> Non-essential spending (dining out, shopping, vacations)</li>
+                                        <li><strong>Unexpected Expenses:</strong> Emergency costs (car repairs, medical bills)</li>
+                                    </ul>
+                                    <p>The key to financial stability is ensuring your expenses don't exceed your income and building savings for future needs and emergencies.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "Which of the following is an example of passive income?",
+                                options: [
+                                    "Salary from your job",
+                                    "Commission from sales",
+                                    "Rental income from property",
+                                    "Tips received as a server"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is the difference between gross income and net income?",
+                                options: [
+                                    "Gross income is monthly while net income is annual",
+                                    "Gross income is before taxes, net income is after taxes",
+                                    "Gross income includes only salary while net income includes all sources",
+                                    "There is no difference between the two terms"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of the following is a fixed expense?",
+                                options: [
+                                    "Grocery shopping",
+                                    "Dining out",
+                                    "Mortgage payment",
+                                    "Entertainment costs"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Why is it important to track expenses?",
+                                options: [
+                                    "To increase your credit score",
+                                    "To understand where your money goes and identify savings opportunities",
+                                    "To impress financial advisors",
+                                    "It's not important as long as you have income"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which type of expense should you plan for but hope not to incur?",
+                                options: [
+                                    "Fixed expenses",
+                                    "Variable expenses",
+                                    "Discretionary expenses",
+                                    "Unexpected/emergency expenses"
+                                ],
+                                correctAnswer: 3
+                            }
+                        ]
+                    },
+                    {
+                        id: "1-3",
+                        title: "Saving & Investing",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">The Importance of Saving</h2>
+                                <div class="section-content">
+                                    <p>Saving money is setting aside income for future use rather than spending it immediately. It's a fundamental financial habit that provides security and enables future opportunities.</p>
+                                    <p>Key reasons to save include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Emergency Fund:</strong> Having 3-6 months of expenses saved for unexpected situations</li>
+                                        <li><strong>Specific Goals:</strong> Saving for major purchases (home, car, education)</li>
+                                        <li><strong>Financial Security:</strong> Creating a buffer against income disruptions</li>
+                                        <li><strong>Peace of Mind:</strong> Reducing financial stress and anxiety</li>
+                                    </ul>
+                                    <p>The general recommendation is to save at least 20% of your income, following the 50/30/20 rule: 50% for needs, 30% for wants, and 20% for savings and debt repayment.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Introduction to Investing</h2>
+                                <div class="section-content">
+                                    <p>Investing is putting money into assets with the expectation of generating income or profit over time. Unlike saving, investing involves risk but offers the potential for higher returns.</p>
+                                    <p>Common investment vehicles include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Stocks:</strong> Ownership shares in companies</li>
+                                        <li><strong>Bonds:</strong> Loans to governments or corporations</li>
+                                        <li><strong>Mutual Funds:</strong> Professionally managed investment portfolios</li>
+                                        <li><strong>Real Estate:</strong> Property investments</li>
+                                        <li><strong>Retirement Accounts:</strong> 401(k)s, IRAs, and other tax-advantaged accounts</li>
+                                    </ul>
+                                    <p>Key investing principles include diversification (spreading investments across different assets), risk tolerance assessment, and long-term thinking.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What is the recommended size of an emergency fund?",
+                                options: [
+                                    "1 month of expenses",
+                                    "3-6 months of expenses",
+                                    "1 year of expenses",
+                                    "As much as possible"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "According to the 50/30/20 rule, what percentage of income should go to savings?",
+                                options: [
+                                    "50%",
+                                    "30%",
+                                    "20%",
+                                    "10%"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is the main difference between saving and investing?",
+                                options: [
+                                    "Saving is for the rich, investing is for everyone",
+                                    "Saving is short-term, investing is only for retirement",
+                                    "Saving has no risk but lower returns, investing has risk but potential for higher returns",
+                                    "There is no significant difference"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What does diversification mean in investing?",
+                                options: [
+                                    "Investing only in diverse companies",
+                                    "Spreading investments across different assets to reduce risk",
+                                    "Changing investment strategies frequently",
+                                    "Investing in foreign markets only"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of these is NOT a common investment vehicle?",
+                                options: [
+                                    "Stocks",
+                                    "Bonds",
+                                    "Credit card points",
+                                    "Real Estate"
+                                ],
+                                correctAnswer: 2
+                            }
+                        ]
+                    },
+                    {
+                        id: "1-4",
+                        title: "Financial Planning",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Setting Financial Goals</h2>
+                                <div class="section-content">
+                                    <p>Financial goals are specific targets you aim to achieve with your money. Well-defined goals provide direction and motivation for your financial decisions.</p>
+                                    <p>Effective financial goals should be:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Specific:</strong> Clearly defined (e.g., "Save $10,000" rather than "Save money")</li>
+                                        <li><strong>Measurable:</strong> Quantifiable to track progress</li>
+                                        <li><strong>Achievable:</strong> Realistic given your financial situation</li>
+                                        <li><strong>Relevant:</strong> Aligned with your values and life objectives</li>
+                                        <li><strong>Time-bound:</strong> With a specific timeframe for achievement</li>
+                                    </ul>
+                                    <p>Goals are typically categorized as short-term (under 1 year), medium-term (1-5 years), and long-term (over 5 years).</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Creating a Financial Plan</h2>
+                                <div class="section-content">
+                                    <p>A financial plan is a comprehensive strategy for managing your money to achieve your goals. It serves as a roadmap for your financial journey.</p>
+                                    <p>Key components of a financial plan include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Budget:</strong> A plan for income and expenses</li>
+                                        <li><strong>Debt Management:</strong> Strategies for reducing and eliminating debt</li>
+                                        <li><strong>Emergency Fund:</strong> Savings for unexpected expenses</li>
+                                        <li><strong>Insurance Coverage:</strong> Protection against financial risks</li>
+                                        <li><strong>Investment Strategy:</strong> Plan for growing wealth</li>
+                                        <li><strong>Retirement Planning:</strong> Preparation for post-work life</li>
+                                        <li><strong>Estate Planning:</strong> Arrangements for asset distribution</li>
+                                    </ul>
+                                    <p>Financial plans should be reviewed and adjusted regularly as your life circumstances and goals change.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What does the 'M' in SMART goals stand for?",
+                                options: [
+                                    "Manageable",
+                                    "Measurable",
+                                    "Meaningful",
+                                    "Motivational"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of these would be considered a long-term financial goal?",
+                                options: [
+                                    "Saving for a vacation next month",
+                                    "Paying off a credit card in 6 months",
+                                    "Buying a car in 2 years",
+                                    "Saving for retirement in 30 years"
+                                ],
+                                correctAnswer: 3
+                            },
+                            {
+                                question: "How often should you review your financial plan?",
+                                options: [
+                                    "Once in a lifetime",
+                                    "Only when you experience major life changes",
+                                    "Regularly and when life circumstances change",
+                                    "Only when the economy changes"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Which is NOT a key component of a financial plan?",
+                                options: [
+                                    "Budget",
+                                    "Investment strategy",
+                                    "Daily stock trading",
+                                    "Emergency fund"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is the purpose of estate planning?",
+                                options: [
+                                    "To buy real estate properties",
+                                    "To plan for asset distribution after death",
+                                    "To minimize current taxes only",
+                                    "To increase current income"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "2",
+                title: "Budgeting Basics",
+                description: "Master the art of creating and maintaining a personal budget to achieve financial goals.",
+                submodules: [
+                    {
+                        id: "2-1",
+                        title: "Budgeting Fundamentals",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">What is a Budget?</h2>
+                                <div class="section-content">
+                                    <p>A budget is a financial plan that outlines your expected income and expenses for a specific period. It's a tool that helps you allocate your money intentionally rather than wondering where it went.</p>
+                                    <p>The primary purposes of a budget include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li>Tracking income and expenses</li>
+                                        <li>Ensuring you live within your means</li>
+                                        <li>Identifying areas to reduce spending</li>
+                                        <li>Planning for future expenses</li>
+                                        <li>Working toward financial goals</li>
+                                    </ul>
+                                    <p>Contrary to popular belief, budgeting isn't about restriction—it's about awareness and intentionality with your money.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Budgeting Methods</h2>
+                                <div class="section-content">
+                                    <p>There are several approaches to budgeting, and the best one depends on your personality and financial situation:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Zero-Based Budget:</strong> Every dollar is assigned a purpose, with income minus expenses equaling zero</li>
+                                        <li><strong>50/30/20 Budget:</strong> 50% for needs, 30% for wants, 20% for savings and debt repayment</li>
+                                        <li><strong>Envelope System:</strong> Cash is allocated to different spending categories in physical envelopes</li>
+                                        <li><strong>Pay Yourself First:</strong> Savings are prioritized before other expenses</li>
+                                        <li><strong>Values-Based Budget:</strong> Spending is aligned with personal values and priorities</li>
+                                    </ul>
+                                    <p>The most effective budget is one you'll actually use consistently, so choose a method that fits your lifestyle and preferences.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What is the primary purpose of a budget?",
+                                options: [
+                                    "To restrict spending on things you enjoy",
+                                    "To plan and track income and expenses intentionally",
+                                    "To impress financial advisors",
+                                    "To qualify for loans"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "In a zero-based budget, what should your income minus expenses equal?",
+                                options: [
+                                    "A positive number",
+                                    "A negative number",
+                                    "Zero",
+                                    "It depends on your income level"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Which budgeting method involves allocating cash to different categories in physical containers?",
+                                options: [
+                                    "Zero-based budget",
+                                    "50/30/20 budget",
+                                    "Envelope system",
+                                    "Values-based budget"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "According to the 50/30/20 budget rule, what percentage should go to 'needs'?",
+                                options: [
+                                    "20%",
+                                    "30%",
+                                    "50%",
+                                    "70%"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What does the 'Pay Yourself First' budgeting method prioritize?",
+                                options: [
+                                    "Paying bills before anything else",
+                                    "Saving money before other expenses",
+                                    "Spending on wants before needs",
+                                    "Paying off debt before saving"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    },
+                    {
+                        id: "2-2",
+                        title: "Creating Your Budget",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Steps to Create a Budget</h2>
+                                <div class="section-content">
+                                    <p>Creating an effective budget involves several key steps:</p>
+                                    <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Calculate your income:</strong> Determine your total monthly income from all sources after taxes</li>
+                                        <li><strong>Track your expenses:</strong> Review past spending to identify all expense categories</li>
+                                        <li><strong>Categorize expenses:</strong> Divide expenses into fixed (rent, insurance) and variable (groceries, entertainment)</li>
+                                        <li><strong>Set financial goals:</strong> Define short-term and long-term objectives</li>
+                                        <li><strong>Create your budget plan:</strong> Allocate income to different expense categories and savings</li>
+                                        <li><strong>Implement your budget:</strong> Follow your plan and track spending</li>
+                                        <li><strong>Review and adjust:</strong> Regularly evaluate your budget and make necessary changes</li>
+                                    </ol>
+                                    <p>Remember that your first budget is rarely perfect—it's a starting point that will evolve as you learn more about your spending habits.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Budgeting Tools and Resources</h2>
+                                <div class="section-content">
+                                    <p>Various tools can help you create and maintain your budget:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Spreadsheets:</strong> Programs like Excel or Google Sheets offer customizable budget templates</li>
+                                        <li><strong>Budgeting Apps:</strong> Applications like Mint, YNAB, or EveryDollar that track spending and categorize expenses</li>
+                                        <li><strong>Banking Tools:</strong> Many banks offer spending analysis and budgeting features</li>
+                                        <li><strong>Paper and Pencil:</strong> Traditional methods can be effective for visual learners</li>
+                                        <li><strong>Financial Advisors:</strong> Professional guidance for complex financial situations</li>
+                                    </ul>
+                                    <p>Choose tools that match your technical comfort level and the complexity of your financial situation. The best tool is one you'll use consistently.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What should be the first step in creating a budget?",
+                                options: [
+                                    "Setting financial goals",
+                                    "Calculating your income",
+                                    "Choosing budgeting software",
+                                    "Opening a savings account"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of these would be considered a fixed expense?",
+                                options: [
+                                    "Groceries",
+                                    "Dining out",
+                                    "Mortgage payment",
+                                    "Entertainment"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "How often should you review and adjust your budget?",
+                                options: [
+                                    "Once a year",
+                                    "Only when your income changes",
+                                    "Regularly (monthly or quarterly)",
+                                    "Never, once it's created"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Which of these is NOT a common budgeting tool?",
+                                options: [
+                                    "Spreadsheets",
+                                    "Budgeting apps",
+                                    "Social media platforms",
+                                    "Banking tools"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is an important characteristic of an effective budget?",
+                                options: [
+                                    "It must use digital tools only",
+                                    "It must be extremely detailed and complex",
+                                    "It must be one you'll use consistently",
+                                    "It must follow a specific template"
+                                ],
+                                correctAnswer: 2
+                            }
+                        ]
+                    },
+                    {
+                        id: "2-3",
+                        title: "Sticking to Your Budget",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">Common Budgeting Challenges</h2>
+                                <div class="section-content">
+                                    <p>Even with the best intentions, sticking to a budget can be difficult. Here are common challenges and how to overcome them:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Unexpected Expenses:</strong> Build an emergency fund to cover surprise costs</li>
+                                        <li><strong>Irregular Income:</strong> Budget based on your lowest income month and save extra during better months</li>
+                                        <li><strong>Impulse Spending:</strong> Implement a 24-hour rule before making unplanned purchases</li>
+                                        <li><strong>Budget Fatigue:</strong> Include some fun money in your budget to prevent feeling deprived</li>
+                                        <li><strong>Lack of Accountability:</strong> Find a budget buddy or use apps that send reminders</li>
+                                    </ul>
+                                    <p>Remember that budgeting is a skill that improves with practice. Don't give up if you face setbacks—adjust your approach and keep going.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Budgeting Success Strategies</h2>
+                                <div class="section-content">
+                                    <p>These practical strategies can help you maintain your budget long-term:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Automate Savings:</strong> Set up automatic transfers to savings accounts on payday</li>
+                                        <li><strong>Use Cash for Problem Categories:</strong> Withdraw cash for categories where you tend to overspend</li>
+                                        <li><strong>Regular Check-ins:</strong> Schedule weekly budget reviews to stay on track</li>
+                                        <li><strong>Celebrate Milestones:</strong> Reward yourself (within budget) when you reach financial goals</li>
+                                        <li><strong>Adjust Seasonally:</strong> Plan for seasonal expenses like holidays and summer activities</li>
+                                    </ul>
+                                    <p>The most successful budgeters view their budget as a flexible tool that evolves with their life circumstances rather than a rigid set of rules.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What is a good strategy for handling impulse purchases?",
+                                options: [
+                                    "Never allow any unplanned purchases",
+                                    "Use credit cards for all purchases",
+                                    "Implement a 24-hour waiting rule",
+                                    "Only shop when you're hungry"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "How can you best handle irregular income when budgeting?",
+                                options: [
+                                    "Don't budget at all",
+                                    "Budget based on your highest-earning month",
+                                    "Budget based on your lowest-earning month",
+                                    "Only budget fixed expenses"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is 'budget fatigue'?",
+                                options: [
+                                    "When your budget spreadsheet becomes too complex",
+                                    "The feeling of restriction that leads to abandoning your budget",
+                                    "When you spend too much time managing your budget",
+                                    "When your budget is too old and needs updating"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which is a recommended strategy for maintaining budget discipline?",
+                                options: [
+                                    "Checking your budget once a year",
+                                    "Automating savings transfers",
+                                    "Using credit cards for all purchases",
+                                    "Avoiding all discretionary spending"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "What should you do if you consistently overspend in a particular budget category?",
+                                options: [
+                                    "Give up on budgeting entirely",
+                                    "Ignore that category in your budget",
+                                    "Use cash only for that spending category",
+                                    "Borrow money to cover the difference"
+                                ],
+                                correctAnswer: 2
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: "2",
+                title: "Introduction to Finance",
+description: "Learn the fundamental concepts and principles of finance",
+                submodules: [
+                    {
+                        id: "2-1",
+                        title: "Understanding Risk and Return",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">The Risk-Return Relationship</h2>
+                                <div class="section-content">
+                                    <p>In investing, risk and return are fundamentally linked. Generally, investments with higher potential returns carry higher risks, while lower-risk investments typically offer lower returns.</p>
+                                    <p>This relationship is one of the most important concepts in finance and forms the basis for modern portfolio theory.</p>
+                                    <p>Key points about risk and return:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Risk Premium:</strong> The additional return investors expect to receive for taking on additional risk beyond a risk-free investment.</li>
+                                        <li><strong>Volatility:</strong> The degree of variation in an investment's value over time, often measured by standard deviation.</li>
+                                        <li><strong>Systematic vs. Unsystematic Risk:</strong> Systematic risks affect the entire market (like economic recessions), while unsystematic risks are specific to individual investments.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Types of Investment Risk</h2>
+                                <div class="section-content">
+                                    <p>Understanding the different types of risk is crucial for making informed investment decisions:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Market Risk:</strong> The risk that an investment will lose value due to factors affecting the overall market.</li>
+                                        <li><strong>Credit Risk:</strong> The risk that a borrower will default on debt payments.</li>
+                                        <li><strong>Inflation Risk:</strong> The risk that inflation will erode the purchasing power of your investment returns.</li>
+                                        <li><strong>Liquidity Risk:</strong> The risk of not being able to sell an investment quickly without a significant loss in value.</li>
+                                        <li><strong>Concentration Risk:</strong> The risk of having too much exposure to a single investment or sector.</li>
+                                    </ul>
+                                    <p>Different investment types carry different combinations of these risks, which is why diversification is so important.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Measuring Risk Tolerance</h2>
+                                <div class="section-content">
+                                    <p>Risk tolerance is your personal capacity and willingness to accept potential losses in pursuit of higher returns. It's influenced by:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Time Horizon:</strong> Longer investment timeframes generally allow for taking on more risk.</li>
+                                        <li><strong>Financial Situation:</strong> Your income stability, emergency savings, and overall wealth.</li>
+                                        <li><strong>Investment Goals:</strong> What you're investing for and when you'll need the money.</li>
+                                        <li><strong>Psychological Factors:</strong> Your emotional response to market volatility and potential losses.</li>
+                                    </ul>
+                                    <p>Accurately assessing your risk tolerance is essential for building a portfolio that you can stick with through market ups and downs.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What is the general relationship between risk and return in investing?",
+                                options: [
+                                    "Higher risk typically leads to higher potential returns",
+                                    "Risk and return are completely unrelated",
+                                    "Lower risk typically leads to higher returns",
+                                    "All investments have the same risk-return profile"
+                                ],
+                                correctAnswer: 0
+                            },
+                            {
+                                question: "What is volatility in the context of investments?",
+                                options: [
+                                    "The guaranteed return of an investment",
+                                    "The degree of variation in an investment's value over time",
+                                    "The minimum amount required to make an investment",
+                                    "The tax paid on investment gains"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of the following is NOT a type of investment risk?",
+                                options: [
+                                    "Market risk",
+                                    "Credit risk",
+                                    "Inflation risk",
+                                    "Profit risk"
+                                ],
+                                correctAnswer: 3
+                            },
+                            {
+                                question: "What is risk tolerance?",
+                                options: [
+                                    "The maximum amount you can invest",
+                                    "Your personal capacity and willingness to accept potential losses",
+                                    "The minimum return you expect from investments",
+                                    "The amount of debt you can handle"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which factor typically allows investors to take on more risk?",
+                                options: [
+                                    "A shorter investment time horizon",
+                                    "A longer investment time horizon",
+                                    "Lower income stability",
+                                    "Immediate need for the invested funds"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    },
+                    {
+                        id: "2-2",
+                        title: "Asset Allocation",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">What is Asset Allocation?</h2>
+                                <div class="section-content">
+                                    <p>Asset allocation is the process of dividing your investment portfolio among different asset categories such as stocks, bonds, cash, real estate, and alternatives. It's one of the most important decisions you'll make as an investor.</p>
+                                    <p>Research has shown that asset allocation is responsible for approximately 90% of a portfolio's return variability over time, making it far more important than individual security selection.</p>
+                                    <p>The right asset allocation balances your need for return with your ability to handle risk, and should be aligned with your:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Investment Goals:</strong> What you're trying to achieve (retirement, education, etc.)</li>
+                                        <li><strong>Time Horizon:</strong> When you'll need the money</li>
+                                        <li><strong>Risk Tolerance:</strong> Your ability and willingness to endure market fluctuations</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Major Asset Classes</h2>
+                                <div class="section-content">
+                                    <p>Each asset class has different characteristics, risks, and potential returns:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Stocks (Equities):</strong> Ownership in companies, highest long-term returns but with significant volatility</li>
+                                        <li><strong>Bonds (Fixed Income):</strong> Loans to governments or corporations, more stable returns but typically lower than stocks</li>
+                                        <li><strong>Cash and Cash Equivalents:</strong> Money market funds, CDs, Treasury bills - lowest risk but lowest returns</li>
+                                        <li><strong>Real Estate:</strong> Property investments, provides income and potential appreciation</li>
+                                        <li><strong>Alternative Investments:</strong> Commodities, private equity, hedge funds, etc. - often used for diversification</li>
+                                    </ul>
+                                    <p>A well-diversified portfolio typically includes a mix of these asset classes, with the specific allocation depending on your individual circumstances.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Rebalancing Your Portfolio</h2>
+                                <div class="section-content">
+                                    <p>Over time, market performance will cause your asset allocation to drift from your target. Rebalancing is the process of realigning your portfolio back to your desired asset allocation.</p>
+                                    <p>For example, if your target allocation is 60% stocks and 40% bonds, but after a strong stock market rally your portfolio is now 70% stocks and 30% bonds, rebalancing would involve selling some stocks and buying bonds.</p>
+                                    <p>Rebalancing strategies include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Calendar Rebalancing:</strong> Reviewing and adjusting your portfolio on a regular schedule (quarterly, annually)</li>
+                                        <li><strong>Percentage-of-Portfolio Rebalancing:</strong> Adjusting when an asset class drifts beyond a predetermined threshold (e.g., 5% from target)</li>
+                                        <li><strong>Tactical Rebalancing:</strong> Making adjustments based on market outlook or economic conditions</li>
+                                    </ul>
+                                    <p>Regular rebalancing helps maintain your risk level and can potentially improve returns by enforcing a "buy low, sell high" discipline.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What is asset allocation?",
+                                options: [
+                                    "The process of selecting individual stocks",
+                                    "The process of dividing your investment portfolio among different asset categories",
+                                    "The process of timing market entries and exits",
+                                    "The process of maximizing short-term returns"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "According to research, approximately what percentage of a portfolio's return variability is determined by asset allocation?",
+                                options: [
+                                    "About 50%",
+                                    "About 70%",
+                                    "About 90%",
+                                    "About 30%"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "Which asset class typically has the highest long-term returns but with significant volatility?",
+                                options: [
+                                    "Bonds",
+                                    "Cash equivalents",
+                                    "Stocks",
+                                    "Treasury bills"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What is rebalancing in the context of portfolio management?",
+                                options: [
+                                    "Changing your investment goals",
+                                    "Realigning your portfolio back to your desired asset allocation",
+                                    "Withdrawing money from your investments",
+                                    "Adding new types of investments to your portfolio"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which of the following is NOT a common rebalancing strategy?",
+                                options: [
+                                    "Calendar rebalancing",
+                                    "Percentage-of-portfolio rebalancing",
+                                    "Tactical rebalancing",
+                                    "Momentum rebalancing"
+                                ],
+                                correctAnswer: 3
+                            }
+                        ]
+                    },
+                    {
+                        id: "2-3",
+                        title: "Diversification Strategies",
+                        content: `
+                            <div class="content-section">
+                                <h2 class="section-title">The Power of Diversification</h2>
+                                <div class="section-content">
+                                    <p>Diversification is a risk management strategy that involves spreading your investments across various assets to reduce exposure to any single investment. It's often described as "not putting all your eggs in one basket."</p>
+                                    <p>The fundamental principle behind diversification is that a portfolio of different kinds of investments will, on average, yield higher returns and pose a lower risk than any individual investment within the portfolio.</p>
+                                    <p>Effective diversification can help:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Reduce Portfolio Volatility:</strong> When some investments perform poorly, others may perform well</li>
+                                        <li><strong>Preserve Capital:</strong> Protect against significant losses from any single investment</li>
+                                        <li><strong>Provide More Consistent Returns:</strong> Smooth out the ups and downs of your investment journey</li>
+                                        <li><strong>Capture Growth Opportunities:</strong> Exposure to various markets increases chances of participating in strong performers</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Levels of Diversification</h2>
+                                <div class="section-content">
+                                    <p>True diversification happens at multiple levels:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Asset Class Diversification:</strong> Spreading investments across stocks, bonds, real estate, etc.</li>
+                                        <li><strong>Geographic Diversification:</strong> Investing in domestic and international markets</li>
+                                        <li><strong>Sector/Industry Diversification:</strong> Investing across different economic sectors (technology, healthcare, finance, etc.)</li>
+                                        <li><strong>Company Size Diversification:</strong> Including large-cap, mid-cap, and small-cap companies</li>
+                                        <li><strong>Investment Style Diversification:</strong> Balancing growth and value investments</li>
+                                        <li><strong>Time Diversification:</strong> Investing regularly over time rather than all at once (dollar-cost averaging)</li>
+                                    </ul>
+                                    <p>The goal is to include investments that respond differently to market conditions, economic events, and other factors.</p>
+                                </div>
+                            </div>
+                            <div class="content-section">
+                                <h2 class="section-title">Implementing Diversification</h2>
+                                <div class="section-content">
+                                    <p>Practical ways to achieve diversification include:</p>
+                                    <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                                        <li><strong>Index Funds and ETFs:</strong> These provide instant diversification within an asset class by holding many securities</li>
+                                        <li><strong>Target-Date Funds:</strong> Automatically diversified portfolios that adjust asset allocation as you approach a target date</li>
+                                        <li><strong>Mutual Funds:</strong> Professionally managed funds that pool money from many investors to purchase a diversified mix of investments</li>
+                                        <li><strong>Robo-Advisors:</strong> Digital platforms that create and manage diversified portfolios based on your goals and risk tolerance</li>
+                                    </ul>
+                                    <p>It's important to note that diversification doesn't guarantee profits or protect against all losses, but it remains one of the most powerful risk management tools available to investors.</p>
+                                </div>
+                            </div>
+                        `,
+                        quiz: [
+                            {
+                                question: "What is the main purpose of diversification?",
+                                options: [
+                                    "To maximize returns regardless of risk",
+                                    "To reduce exposure to any single investment and manage risk",
+                                    "To eliminate all investment risk",
+                                    "To simplify investment decisions"
+                                ],
+                                correctAnswer: 1
+                            },
+                            {
+                                question: "Which analogy is commonly used to explain diversification?",
+                                options: [
+                                    "Not putting all your eggs in one basket",
+                                    "A rising tide lifts all boats",
+                                    "The early bird gets the worm",
+                                    "Slow and steady wins the race"
+                                ],
+                                correctAnswer: 0
+                            },
+                            {
+                                question: "Which of the following is NOT a level of diversification?",
+                                options: [
+                                    "Asset class diversification",
+                                    "Geographic diversification",
+                                    "Temporal diversification",
+                                    "Sector diversification"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "What investment vehicle provides instant diversification within an asset class?",
+                                options: [
+                                    "Individual stocks",
+                                    "Cryptocurrency",
+                                    "Index funds",
+                                    "Collectibles"
+                                ],
+                                correctAnswer: 2
+                            },
+                            {
+                                question: "True or false: Diversification guarantees you won't lose money in market downturns.",
+                                options: [
+                                    "True - diversification eliminates all investment risk",
+                                    "False - diversification reduces but doesn't eliminate risk",
+                                    "True - as long as you diversify across at least 10 investments",
+                                    "False - diversification actually increases risk"
+                                ],
+                                correctAnswer: 1
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
+        
+        // Current state
+        let currentModuleId = moduleId;
+        let currentModule = null;
+        let currentSubmoduleIndex = 0;
+        let completedSubmodules = [];
+        
+        // Save progress to localStorage
+        function saveProgress() {
+            if (!currentModule) return;
+            
+            // Get existing progress or initialize new object
+            const progress = JSON.parse(localStorage.getItem('moduleProgress') || '{}');
+            
+            // Update progress for current module
+            progress[currentModule.id] = {
+                completed: completedSubmodules.length,
+                total: currentModule.submodules.length,
+                percentage: Math.round((completedSubmodules.length / currentModule.submodules.length) * 100),
+                completedSubmodules: completedSubmodules
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('moduleProgress', JSON.stringify(progress));
+        }
+        
+        // Load progress from localStorage
+        function loadProgress(moduleId) {
+            const progress = JSON.parse(localStorage.getItem('moduleProgress') || '{}');
+            if (progress[moduleId]) {
+                completedSubmodules = progress[moduleId].completedSubmodules || [];
+                return progress[moduleId];
+            }
+            return null;
+        }
+        
+        // Initialize the module
+        function initializeModule(moduleId) {
+            if (!moduleId) return;
+            
+            // Load progress from localStorage
+            const savedProgress = loadProgress(moduleId);
+            
+            // Check if this is a generated module
+            if (moduleId.startsWith('gen_')) {
+                // Parse the generated module ID (format: gen_interest_idx)
+                const parts = moduleId.split('_');
+                if (parts.length === 3) {
+                    const interest = parts[1];
+                    const idx = parseInt(parts[2]);
+                    
+                    // Get generated modules from localStorage
+                    const generatedModules = JSON.parse(localStorage.getItem('generatedModules') || '{}');
+                    
+                    if (generatedModules[interest] && generatedModules[interest][idx]) {
+                        // Create a temporary module object from the generated module
+                        const genModule = generatedModules[interest][idx];
+                        currentModule = {
+                            id: moduleId,
+                            title: genModule.title,
+                            description: genModule.description,
+                            submodules: []
+                        };
+                        
+                        // Create submodules from the content
+                        if (genModule.content && genModule.content.sections) {
+                            genModule.content.sections.forEach((section, i) => {
+                                currentModule.submodules.push({
+                                    id: `${moduleId}-${i+1}`,
+                                    title: section.title,
+                                    content: `
+                                        <div class="content-section">
+                                            <h2 class="section-title">${section.title}</h2>
+                                            <div class="section-content">
+                                                <p>${section.text}</p>
+                                                ${section.keyPoints ? `
+                                                <h3>Key Points:</h3>
+                                                <ul>
+                                                    ${section.keyPoints.map(point => `<li>${point}</li>`).join('')}
+                                                </ul>` : ''}
+                                            </div>
+                                        </div>
+                                    `,
+                                    quiz: genModule.quizzes && genModule.quizzes[0] ? 
+                                        genModule.quizzes[0].questions.slice(i*2, i*2+2).map(q => ({
+                                            question: q.question,
+                                            options: q.options,
+                                            answer: q.correctAnswer
+                                        })) : []
+                                });
+                            });
+                        }
+                        
+                        // Set module title and description
+                        document.getElementById('module-title').textContent = currentModule.title;
+                        document.getElementById('module-description').textContent = currentModule.description;
+                        document.title = `FinScholars - ${currentModule.title}`;
+                        
+                        return; // Exit early as we've set up the module
+                    }
+                }
+            }
+            
+            // For regular modules, find the module in the predefined list
+            currentModule = modules.find(m => m.id === currentModuleId);
+            if (!currentModule) return;
+            
+            // Set module title and description
+            document.getElementById('module-title').textContent = currentModule.title;
+            document.getElementById('module-description').textContent = currentModule.description;
+            document.title = `FinScholars - ${currentModule.title}`;
+            
+            // Create progress indicator
+            const progressIndicator = document.getElementById('progress-indicator');
+            progressIndicator.innerHTML = '';
+            currentModule.submodules.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (index === 0) dot.classList.add('active');
+                progressIndicator.appendChild(dot);
+            });
+            
+            // Create submodule navigation
+            const submoduleNav = document.getElementById('submodule-nav');
+            submoduleNav.innerHTML = '';
+            currentModule.submodules.forEach((submodule, index) => {
+                const button = document.createElement('button');
+                button.className = 'submodule-button';
+                button.textContent = submodule.title;
+                button.dataset.index = index;
+                
+                // If first submodule or previous submodule is completed, unlock this submodule
+                if (index === 0 || completedSubmodules.includes(index - 1)) {
+                    if (index === currentSubmoduleIndex) {
+                        button.classList.add('active');
+                    }
+                    // Mark completed submodules
+                    if (completedSubmodules.includes(index)) {
+                        button.classList.add('completed');
+                    }
+                } else {
+                    button.classList.add('locked');
+                    button.disabled = true;
+                }
+                
+                button.addEventListener('click', () => {
+                    if (button.classList.contains('locked')) return;
+                    showSubmodule(index);
+                });
+                
+                submoduleNav.appendChild(button);
+            });
+            
+            // Create submodules
+            const submodulesContainer = document.getElementById('submodules-container');
+            submodulesContainer.innerHTML = '';
+            currentModule.submodules.forEach((submodule, index) => {
+                const submoduleElement = document.createElement('div');
+                submoduleElement.className = 'submodule';
+                submoduleElement.id = `submodule-${submodule.id}`;
+                if (index === 0) submoduleElement.classList.add('active');
+                
+                submoduleElement.innerHTML = submodule.content;
+                submodulesContainer.appendChild(submoduleElement);
+            });
+            
+            // Set up quiz button
+            const quizButton = document.getElementById('take-quiz-button');
+            quizButton.addEventListener('click', showQuiz);
+            
+            // Set up quiz submission
+            const submitQuizButton = document.getElementById('submit-quiz-button');
+            submitQuizButton.addEventListener('click', submitQuiz);
+        }
+        
+        // Show a specific submodule
+        function showSubmodule(index) {
+            if (!currentModule || index >= currentModule.submodules.length) return;
+            
+            // Update current submodule index
+            currentSubmoduleIndex = index;
+            
+            // Update submodule navigation
+            const submoduleButtons = document.querySelectorAll('.submodule-button');
+            submoduleButtons.forEach((button, i) => {
+                button.classList.remove('active');
+                if (i === index) button.classList.add('active');
+            });
+            
+            // Update progress indicator
+            const progressDots = document.querySelectorAll('.progress-dot');
+            progressDots.forEach((dot, i) => {
+                dot.classList.remove('active');
+                if (i === index) dot.classList.add('active');
+                if (completedSubmodules.includes(i)) dot.classList.add('completed');
+            });
+            
+            // Show the selected submodule
+            const submodules = document.querySelectorAll('.submodule');
+            submodules.forEach((submodule, i) => {
+                submodule.classList.remove('active');
+                if (i === index) submodule.classList.add('active');
+            });
+            
+            // Hide quiz container
+            document.getElementById('quiz-container').classList.remove('active');
+            
+            // Check if this submodule is already completed
+            if (completedSubmodules.includes(index)) {
+                // If completed, show "Completed" message instead of quiz button
+                document.getElementById('take-quiz-button').style.display = 'none';
+                
+                // Show completion message if it doesn't exist yet
+                let completionMsg = document.getElementById('completion-message-' + index);
+                if (!completionMsg) {
+                    completionMsg = document.createElement('div');
+                    completionMsg.id = 'completion-message-' + index;
+                    completionMsg.className = 'completion-message';
+                    
+                    // Create next button with proper navigation
+                    const nextIndex = index + 1 < currentModule.submodules.length ? index + 1 : index;
+                    const buttonText = index + 1 < currentModule.submodules.length ? 'Next Submodule' : 'Review Module';
+                    
+                    completionMsg.innerHTML = `
+                        <div class="success-icon">✓</div>
+                        <h3>Submodule Completed!</h3>
+                        <p>You've already passed this quiz. Continue to the next submodule.</p>
+                        <button class="next-submodule-btn" id="next-submodule-btn-${index}">
+                            ${buttonText}
+                        </button>
+                    `;
+                    
+                    document.querySelector('.submodule.active').appendChild(completionMsg);
+                    
+                    // Add event listener after the element is added to DOM
+                    setTimeout(() => {
+                        document.getElementById(`next-submodule-btn-${index}`).addEventListener('click', () => {
+                            if (index + 1 < currentModule.submodules.length) {
+                                // Unlock next submodule if it exists
+                                const nextButton = document.querySelector(`.submodule-button[data-index="${nextIndex}"]`);
+                                if (nextButton) {
+                                    nextButton.classList.remove('locked');
+                                    nextButton.disabled = false;
+                                }
+                                showSubmodule(nextIndex);
+                            }
+                        });
+                    }, 0);
+                } else {
+                    completionMsg.style.display = 'block';
+                }
+                
+                // Unlock next submodule if it exists
+                if (index + 1 < currentModule.submodules.length) {
+                    const nextButton = document.querySelector(`.submodule-button[data-index="${index + 1}"]`);
+                    if (nextButton) {
+                        nextButton.classList.remove('locked');
+                        nextButton.disabled = false;
+                    }
+                }
+            } else {
+                // Show quiz button for uncompleted submodules
+                document.getElementById('take-quiz-button').style.display = 'inline-block';
+                
+                // Hide completion message if it exists
+                const completionMsg = document.getElementById('completion-message-' + index);
+                if (completionMsg) {
+                    completionMsg.style.display = 'none';
+                }
+            }
+        }
+        
+        // Show the quiz for the current submodule
+        function showQuiz() {
+            if (!currentModule || currentSubmoduleIndex >= currentModule.submodules.length) return;
+            
+            const currentSubmodule = currentModule.submodules[currentSubmoduleIndex];
+            const quizContainer = document.getElementById('quiz-container');
+            const quizQuestions = document.getElementById('quiz-questions');
+            
+            // Clear previous quiz
+            quizQuestions.innerHTML = '';
+            
+            // Create quiz questions
+            currentSubmodule.quiz.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'quiz-question';
+                
+                const questionText = document.createElement('h3');
+                questionText.textContent = `${index + 1}. ${question.question}`;
+                questionElement.appendChild(questionText);
+                
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'quiz-options';
+                
+                question.options.forEach((option, optionIndex) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'quiz-option';
+                    optionElement.textContent = option;
+                    optionElement.dataset.questionIndex = index;
+                    optionElement.dataset.optionIndex = optionIndex;
+                    
+                    optionElement.addEventListener('click', () => {
+                        // Deselect other options for this question
+                        const options = document.querySelectorAll(`.quiz-option[data-question-index="${index}"]`);
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        
+                        // Select this option
+                        optionElement.classList.add('selected');
+                    });
+                    
+                    optionsContainer.appendChild(optionElement);
+                });
+                
+                questionElement.appendChild(optionsContainer);
+                quizQuestions.appendChild(questionElement);
+            });
+            
+            // Hide quiz result
+            document.getElementById('quiz-result').style.display = 'none';
+            
+            // Show quiz container
+            quizContainer.classList.add('active');
+            
+            // Hide quiz button
+            document.getElementById('take-quiz-button').style.display = 'none';
+        }
+        
+        // Submit the quiz and check answers
+        function submitQuiz() {
+            if (!currentModule || currentSubmoduleIndex >= currentModule.submodules.length) return;
+            
+            const currentSubmodule = currentModule.submodules[currentSubmoduleIndex];
+            const selectedOptions = document.querySelectorAll('.quiz-option.selected');
+            const quizResult = document.getElementById('quiz-result');
+            
+            // Clear previous result content
+            quizResult.innerHTML = '';
+            
+            // Check if all questions have been answered
+            if (selectedOptions.length < currentSubmodule.quiz.length) {
+                quizResult.textContent = 'Please answer all questions before submitting.';
+                quizResult.className = 'quiz-result failure';
+                quizResult.style.display = 'block';
+                return;
+            }
+            
+            // Calculate score
+            let correctAnswers = 0;
+            let answers = [];
+            
+            // Create an array to track which questions were answered correctly
+            currentSubmodule.quiz.forEach((_, index) => {
+                answers[index] = false;
+            });
+            
+            selectedOptions.forEach(option => {
+                const questionIndex = parseInt(option.dataset.questionIndex);
+                const optionIndex = parseInt(option.dataset.optionIndex);
+                
+                if (currentSubmodule.quiz[questionIndex].correctAnswer === optionIndex) {
+                    correctAnswers++;
+                    answers[questionIndex] = true;
+                }
+            });
+            
+            const score = (correctAnswers / currentSubmodule.quiz.length) * 100;
+            
+            // Display result
+            if (score >= 80) {
+                const resultText = document.createElement('p');
+                resultText.textContent = `Congratulations! You scored ${score.toFixed(0)}%. You can now proceed to the next section.`;
+                quizResult.appendChild(resultText);
+                quizResult.className = 'quiz-result success';
+                
+                // Mark current submodule as completed
+                if (!completedSubmodules.includes(currentSubmoduleIndex)) {
+                    completedSubmodules.push(currentSubmoduleIndex);
+                }
+                
+                // Save progress to localStorage
+                saveProgress();
+                
+                // Update progress indicator
+                const progressDots = document.querySelectorAll('.progress-dot');
+                if (progressDots[currentSubmoduleIndex]) {
+                    progressDots[currentSubmoduleIndex].classList.add('completed');
+                }
+                
+                // Unlock next submodule if available
+                if (currentSubmoduleIndex < currentModule.submodules.length - 1) {
+                    const nextSubmoduleButton = document.querySelector(`.submodule-button[data-index="${currentSubmoduleIndex + 1}"]`);
+                    if (nextSubmoduleButton) {
+                        nextSubmoduleButton.classList.remove('locked');
+                        nextSubmoduleButton.disabled = false;
+                    }
+                    
+                    // Add "Next" button to quiz result
+                    const nextButton = document.createElement('button');
+                    nextButton.className = 'button';
+                    nextButton.textContent = 'Next Section';
+                    nextButton.style.marginTop = '1rem';
+                    nextButton.addEventListener('click', () => {
+                        showSubmodule(currentSubmoduleIndex + 1);
+                    });
+                    
+                    quizResult.appendChild(document.createElement('br'));
+                    quizResult.appendChild(nextButton);
+                } else {
+                    // If this is the last submodule, show completion message
+                    const completionMessage = document.createElement('p');
+                    completionMessage.textContent = 'You have completed all sections of this module!';
+                    completionMessage.style.marginTop = '1rem';
+                    quizResult.appendChild(completionMessage);
+                    
+                    // Add button to return to dashboard
+                    const dashboardButton = document.createElement('button');
+                    dashboardButton.className = 'button';
+                    dashboardButton.textContent = 'Return to Dashboard';
+                    dashboardButton.style.marginTop = '1rem';
+                    dashboardButton.addEventListener('click', () => {
+                        window.location.href = 'dashboard.html';
+                    });
+                    
+                    quizResult.appendChild(dashboardButton);
+                }
+            } else {
+                const resultText = document.createElement('p');
+                resultText.textContent = `You scored ${score.toFixed(0)}%. You need at least 80% to proceed. Please review the material and try again.`;
+                quizResult.appendChild(resultText);
+                quizResult.className = 'quiz-result failure';
+                
+                // Show which questions were incorrect
+                const incorrectQuestions = document.createElement('p');
+                incorrectQuestions.textContent = 'Review these topics:';
+                incorrectQuestions.style.marginTop = '0.5rem';
+                quizResult.appendChild(incorrectQuestions);
+                
+                const topicsList = document.createElement('ul');
+                topicsList.style.marginLeft = '1.5rem';
+                topicsList.style.marginTop = '0.5rem';
+                
+                answers.forEach((correct, index) => {
+                    if (!correct) {
+                        const topic = document.createElement('li');
+                        topic.textContent = currentSubmodule.quiz[index].question;
+                        topicsList.appendChild(topic);
+                    }
+                });
+                
+                quizResult.appendChild(topicsList);
+                
+                // Add "Review" button to quiz result
+                const reviewButton = document.createElement('button');
+                reviewButton.className = 'button';
+                reviewButton.textContent = 'Review Material';
+                reviewButton.style.marginTop = '1rem';
+                reviewButton.addEventListener('click', () => {
+                    document.getElementById('quiz-container').classList.remove('active');
+                    document.getElementById('take-quiz-button').style.display = 'inline-block';
+                });
+                
+                quizResult.appendChild(document.createElement('br'));
+                quizResult.appendChild(reviewButton);
+                
+                // Add "Try Again" button
+                const tryAgainButton = document.createElement('button');
+                tryAgainButton.className = 'button';
+                tryAgainButton.textContent = 'Try Again';
+                tryAgainButton.style.marginTop = '1rem';
+                tryAgainButton.style.marginLeft = '0.5rem';
+                tryAgainButton.addEventListener('click', showQuiz);
+                
+                quizResult.appendChild(tryAgainButton);
+            }
+            
+            quizResult.style.display = 'block';
+        }
+        
+        // Function to initialize module
+        function initializeModule(moduleId) {
+            // Clear any previous module content
+            document.getElementById('module-title').textContent = '';
+            document.getElementById('module-description').textContent = '';
+            // Clear submodule list to prevent duplicates
+            document.getElementById('submodule-list').innerHTML = '';
+            document.getElementById('content-container').innerHTML = '';
+            
+            // Check if this is a generated module (starts with "gen_")
+            if (moduleId && moduleId.startsWith('gen_')) {
+                // Parse the generated module ID to get interest and index
+                const parts = moduleId.split('_');
+                
+                if (parts.length >= 3) {
+                    const interest = parts[1];
+                    const idx = parseInt(parts[2]);
+                    
+                    // Get generated modules from localStorage with validation
+                    const generatedModulesJSON = localStorage.getItem('generatedModules');
+                    console.log(`Loading module: ${moduleId}, localStorage data:`, generatedModulesJSON ? 'Data found' : 'No data');
+                    
+                    if (generatedModulesJSON) {
+                        try {
+                            const generatedModules = JSON.parse(generatedModulesJSON);
+                            console.log(`Module data for ${interest}:`, generatedModules[interest] ? 'Found' : 'Not found');
+                            
+                            // Check if the module exists
+                            if (generatedModules[interest] && generatedModules[interest][idx]) {
+                                const module = generatedModules[interest][idx];
+                                
+                                // Set module title and description
+                                document.getElementById('module-title').textContent = module.title || 'Untitled Module';
+                                document.getElementById('module-description').textContent = module.description || 'No description available';
+                                document.title = `FinScholars - ${module.title || 'Module'}`;
+                                
+                                // Create submodules with enhanced error handling
+                                if (module.content && module.content.sections && Array.isArray(module.content.sections)) {
+                                    // Log the sections for debugging
+                                    console.log(`Module ${moduleId} has ${module.content.sections.length} sections`);
+                                    
+                                    module.content.sections.forEach((section, sectionIdx) => {
+                                        try {
+                                            // Validate section data
+                                            if (!section) {
+                                                console.error(`Section ${sectionIdx} is undefined or null`);
+                                                return; // Skip this iteration
+                                            }
+                                            
+                                            // Create submodule with defensive coding
+                                            const submodule = {
+                                                id: `gen_${interest}_${idx}_${sectionIdx}`,
+                                                title: section.title || `Section ${sectionIdx + 1}`,
+                                                content: `
+                                                    <div class="content-section">
+                                                        <h2 class="section-title">${section.title || `Section ${sectionIdx + 1}`}</h2>
+                                                        <div class="section-content">
+                                                            <p>${section.text || 'No content available for this section.'}</p>
+                                                            ${section.keyPoints && Array.isArray(section.keyPoints) ? `
+                                                            <h3 style="margin-top: 1rem;">Key Points:</h3>
+                                                            <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                                                                ${section.keyPoints.map(point => `<li>${point || 'Key point'}</li>`).join('')}
+                                                            </ul>
+                                                            ` : ''}
+                                                        </div>
+                                                    </div>
+                                                `,
+                                                quiz: module.quizzes && module.quizzes.length > 0 && 
+                                                      module.quizzes[0] && module.quizzes[0].questions && 
+                                                      Array.isArray(module.quizzes[0].questions) ? 
+                                                    module.quizzes[0].questions.slice(sectionIdx * 2, sectionIdx * 2 + 2).map(q => ({
+                                                        question: q.question || 'Question',
+                                                        options: Array.isArray(q.options) ? q.options : ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+                                                        correctAnswer: typeof q.correctAnswer === 'number' ? q.correctAnswer : 0
+                                                    })) : []
+                                            };
+                                        
+                                        // Check if this submodule ID already exists in the list
+                                        const existingSubmodule = document.querySelector(`.submodule-button[data-id="gen_${interest}_${idx}_${sectionIdx}"]`);
+                                        if (!existingSubmodule) {
+                                            // Only add if it doesn't already exist
+                                            addSubmoduleToList(submodule);
+                                        }
+                                        } catch (error) {
+                                            console.error(`Error creating submodule ${sectionIdx}:`, error);
+                                        }
+                                    });
+                                    
+                                    // Show the first submodule by default
+                                    if (module.content.sections.length > 0) {
+                                        showSubmodule(`gen_${interest}_${idx}_0`);
+                                    }
+                                } else {
+                                    // Create a default submodule with error message
+                                    const submodule = {
+                                        id: `gen_${interest}_${idx}_error`,
+                                        title: "Module Content",
+                                        content: `
+                                            <div class="content-section">
+                                                <h2 class="section-title">Module Content</h2>
+                                                <div class="section-content">
+                                                    <p>This module appears to be missing proper content structure. Please try refreshing the page or selecting a different module.</p>
+                                                </div>
+                                            </div>
+                                        `,
+                                        quiz: []
+                                    };
+                                    
+                                    addSubmoduleToList(submodule);
+                                    showSubmodule(`gen_${interest}_${idx}_error`);
+                                }
+                                
+                                return; // Exit the function after setting up the generated module
+                            }
+                        } catch (error) {
+                            console.error("Error parsing generated modules:", error);
+                        }
+                    }
+                }
+                
+                // If we get here, the generated module wasn't found or couldn't be loaded
+                document.getElementById('module-title').textContent = 'Module Not Found';
+                document.getElementById('module-description').textContent = 'The requested module could not be found or could not be loaded properly.';
+                return;
+            }
+            
+            // Handle regular (non-generated) modules
+            let module;
+            switch(moduleId) {
+                case '1':
+                    module = modules[0];
+                    break;
+                case '2':
+                    module = modules[1];
+                    break;
+                case '3':
+                    module = modules[2];
+                    break;
+                case '4':
+                    module = modules[3];
+                    break;
+                case '5':
+                    module = modules[4];
+                    break;
+                case '6':
+                    module = modules[5];
+                    break;
+                default:
+                    document.getElementById('module-title').textContent = 'Module Not Found';
+                    document.getElementById('module-description').textContent = 'The requested module could not be found.';
+                    return;
+            }
+            
+            // Set module title and description
+            document.getElementById('module-title').textContent = module.title;
+            document.getElementById('module-description').textContent = module.description;
+            document.title = `FinScholars - ${module.title}`;
+            
+            // Add submodules to the list
+            module.submodules.forEach(submodule => {
+                addSubmoduleToList(submodule);
+            });
+            
+            // Show the first submodule by default
+            if (module.submodules.length > 0) {
+                showSubmodule(module.submodules[0].id);
+            }
+        }
+        
+        // Initialize the module when the page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            // Force browser to reload the page completely to avoid caching issues
+            if (!window.location.hash) {
+                window.location.hash = 'loaded';
+                window.location.reload(true);
+            } else {
+                const urlParams = new URLSearchParams(window.location.search);
+                const moduleId = urlParams.get('id');
+                // Force module reload by clearing any cached data
+                document.title = "Loading Module...";
+                setTimeout(() => {
+                    initializeModule(moduleId);
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Instance Demo - FinScholars</title>
+    <style>
+        :root {
+            --primary: #00c6ff;
+            --primary-dark: #0099cc;
+            --secondary: #7f5af0;
+            --secondary-dark: #6a4cbf;
+            --background: #16161a;
+            --surface: #242629;
+            --surface-light: #2e3035;
+            --text: #fffffe;
+            --text-secondary: #94a1b2;
+            --success: #2cb67d;
+            --error: #ef4565;
+            --warning: #ff8906;
+            --border-radius: 12px;
+            --glass-bg: rgba(36, 38, 41, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px var(--glass-shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 1.5rem;
+        }
+
+        .user-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-btn {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-btn:hover {
+            background: var(--surface-light);
+        }
+
+        .user-btn.active {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        .user-profile {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+
+        .profile-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .profile-info h2 {
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+        }
+
+        .interests-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .interest-tag {
+            background: var(--surface-light);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .modules-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .module-card {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .module-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-progress {
+            height: 8px;
+            background: var(--surface-light);
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .badge-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .badge-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--surface-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .badge-name {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .focus-sessions {
+            margin-top: 1rem;
+        }
+
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--surface-light);
+        }
+
+        .session-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .session-duration {
+            font-weight: bold;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 198, 255, 0.1);
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        .status-success {
+            background: rgba(44, 182, 125, 0.2);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(239, 69, 101, 0.2);
+            color: var(--error);
+        }
+
+        .edit-interests {
+            margin-top: 1rem;
+        }
+
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .interest-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .interest-checkbox input {
+            width: 18px;
+            height: 18px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(22, 22, 26, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>User Instance Demo</h1>
+        </header>
+
+        <div class="glass-card">
+            <h2>Select User</h2>
+            <p>Each user is a separate instance with its own state and data.</p>
+            <div class="user-selector">
+                <button class="user-btn active" data-user-id="user1">User 1</button>
+                <button class="user-btn" data-user-id="user2">User 2</button>
+                <button class="user-btn" data-user-id="user3">User 3</button>
+            </div>
+        </div>
+
+        <div class="user-profile glass-card">
+            <div>
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="user-avatar">U1</div>
+                        <div class="profile-info">
+                            <h2 id="user-name">User 1</h2>
+                            <p id="user-email">user1@example.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>My Interests</h3>
+                    <div class="interests-list" id="interests-display">
+                        <!-- Interests will be populated here -->
+                    </div>
+                    <div class="edit-interests">
+                        <button class="btn btn-outline" id="edit-interests-btn">Edit Interests</button>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>Focus Sessions</h3>
+                    <div class="focus-sessions" id="focus-sessions">
+                        <!-- Focus sessions will be populated here -->
+                    </div>
+                    <div class="actions">
+                        <button class="btn" id="start-focus-btn">Start Focus Session</button>
+                        <button class="btn btn-outline hidden" id="end-focus-btn">End Focus Session</button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="profile-section">
+                    <h3>Learning Progress</h3>
+                    <div class="module-progress">
+                        <div class="module-progress-text">
+                            <span id="progress-percentage">0%</span> Complete
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-bar" id="overall-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="modules-list" id="modules-list">
+                        <!-- Modules will be populated here -->
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>Badges & Achievements</h3>
+                    <div class="badges-grid" id="badges-grid">
+                        <!-- Badges will be populated here -->
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-secondary" id="earn-badge-btn">Earn Random Badge</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Interests Modal -->
+        <div class="glass-card hidden" id="edit-interests-modal">
+            <h3>Edit My Interests</h3>
+            <p>Select topics you're interested in learning about:</p>
+            <div class="interests-grid" id="interests-grid">
+                <!-- Interest checkboxes will be populated here -->
+            </div>
+            <div class="actions">
+                <button class="btn" id="save-interests-btn">Save Interests</button>
+                <button class="btn btn-outline" id="cancel-interests-btn">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="status-message" class="status-message hidden"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // Mock database for user instances
+        const userDatabase = {
+            user1: {
+                id: 'user1',
+                name: 'Alex Johnson',
+                email: 'alex@example.com',
+                interests: ['Investing', 'Budgeting', 'Retirement'],
+                modules: [
+                    { id: 'mod1', title: 'Introduction to Investing', progress: 100, completed: true },
+                    { id: 'mod2', title: 'Budgeting Basics', progress: 75, completed: false },
+                    { id: 'mod3', title: 'Retirement Planning', progress: 30, completed: false }
+                ],
+                badges: [
+                    { id: 'badge1', name: 'First Login', date: '2023-05-15', icon: '🏆' },
+                    { id: 'badge2', name: 'Module Master', date: '2023-06-02', icon: '📚' }
+                ],
+                focusSessions: [
+                    { date: '2023-06-10', duration: 45 },
+                    { date: '2023-06-08', duration: 30 }
+                ],
+                focusModeActive: false,
+                progressPercentage: 68
+            },
+            user2: {
+                id: 'user2',
+                name: 'Sam Rivera',
+                email: 'sam@example.com',
+                interests: ['Stocks', 'Crypto', 'Real Estate'],
+                modules: [
+                    { id: 'mod1', title: 'Introduction to Investing', progress: 50, completed: false },
+                    { id: 'mod4', title: 'Cryptocurrency Basics', progress: 100, completed: true },
+                    { id: 'mod5', title: 'Real Estate Investment', progress: 10, completed: false }
+                ],
+                badges: [
+                    { id: 'badge1', name: 'First Login', date: '2023-05-20', icon: '🏆' }
+                ],
+                focusSessions: [
+                    { date: '2023-06-09', duration: 60 }
+                ],
+                focusModeActive: false,
+                progressPercentage: 53
+            },
+            user3: {
+                id: 'user3',
+                name: 'Jordan Lee',
+                email: 'jordan@example.com',
+                interests: ['Debt Management', 'Credit Scores', 'Taxes'],
+                modules: [
+                    { id: 'mod6', title: 'Debt Reduction Strategies', progress: 100, completed: true },
+                    { id: 'mod7', title: 'Improving Credit Score', progress: 100, completed: true },
+                    { id: 'mod8', title: 'Tax Planning', progress: 25, completed: false }
+                ],
+                badges: [
+                    { id: 'badge1', name: 'First Login', date: '2023-05-18', icon: '🏆' },
+                    { id: 'badge2', name: 'Module Master', date: '2023-05-30', icon: '📚' },
+                    { id: 'badge3', name: 'Focus Champion', date: '2023-06-05', icon: '⏱️' }
+                ],
+                focusSessions: [
+                    { date: '2023-06-11', duration: 90 },
+                    { date: '2023-06-07', duration: 45 },
+                    { date: '2023-06-05', duration: 60 }
+                ],
+                focusModeActive: false,
+                progressPercentage: 75
+            }
+        };
+
+        // All available interests for the application
+        const allInterests = [
+            'Investing', 'Budgeting', 'Retirement', 'Stocks', 'Bonds', 
+            'Crypto', 'Real Estate', 'Debt Management', 'Credit Scores', 
+            'Taxes', 'Insurance', 'Estate Planning', 'College Savings', 
+            'Financial Independence', 'Side Hustles'
+        ];
+
+        // All available badges
+        const allBadges = [
+            { id: 'badge1', name: 'First Login', icon: '🏆' },
+            { id: 'badge2', name: 'Module Master', icon: '📚' },
+            { id: 'badge3', name: 'Focus Champion', icon: '⏱️' },
+            { id: 'badge4', name: 'Quiz Whiz', icon: '🧠' },
+            { id: 'badge5', name: 'Streak Keeper', icon: '🔥' },
+            { id: 'badge6', name: 'Community Helper', icon: '👥' },
+            { id: 'badge7', name: 'Resource Explorer', icon: '🔍' },
+            { id: 'badge8', name: 'Goal Setter', icon: '🎯' }
+        ];
+
+        // Current user state
+        let currentUser = 'user1';
+        let activeFocusSession = null;
+
+        // DOM Elements
+        const userButtons = document.querySelectorAll('.user-btn');
+        const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const interestsDisplay = document.getElementById('interests-display');
+        const modulesList = document.getElementById('modules-list');
+        const badgesGrid = document.getElementById('badges-grid');
+        const focusSessions = document.getElementById('focus-sessions');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const overallProgress = document.getElementById('overall-progress');
+        const startFocusBtn = document.getElementById('start-focus-btn');
+        const endFocusBtn = document.getElementById('end-focus-btn');
+        const earnBadgeBtn = document.getElementById('earn-badge-btn');
+        const editInterestsBtn = document.getElementById('edit-interests-btn');
+        const editInterestsModal = document.getElementById('edit-interests-modal');
+        const interestsGrid = document.getElementById('interests-grid');
+        const saveInterestsBtn = document.getElementById('save-interests-btn');
+        const cancelInterestsBtn = document.getElementById('cancel-interests-btn');
+        const statusMessage = document.getElementById('status-message');
+        const loadingOverlay = document.getElementById('loading-overlay');
+
+        // Initialize the app
+        function init() {
+            // Set up event listeners
+            userButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    switchUser(button.dataset.userId);
+                });
+            });
+
+            startFocusBtn.addEventListener('click', startFocusSession);
+            endFocusBtn.addEventListener('click', endFocusSession);
+            earnBadgeBtn.addEventListener('click', earnRandomBadge);
+            editInterestsBtn.addEventListener('click', showEditInterests);
+            saveInterestsBtn.addEventListener('click', saveInterests);
+            cancelInterestsBtn.addEventListener('click', hideEditInterests);
+
+            // Load initial user
+            loadUser(currentUser);
+        }
+
+        // Switch to a different user
+        function switchUser(userId) {
+            // Update UI for selected user button
+            userButtons.forEach(button => {
+                if (button.dataset.userId === userId) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            // Set current user and load data
+            currentUser = userId;
+            loadUser(userId);
+        }
+
+        // Load user data
+        function loadUser(userId) {
+            showLoading();
+            
+            // Simulate API delay
+            setTimeout(() => {
+                const user = userDatabase[userId];
+                
+                // Update profile info
+                userAvatar.textContent = user.name.charAt(0);
+                userName.textContent = user.name;
+                userEmail.textContent = user.email;
+                
+                // Update interests
+                renderInterests(user.interests);
+                
+                // Update modules
+                renderModules(user.modules);
+                
+                // Update badges
+                renderBadges(user.badges);
+                
+                // Update focus sessions
+                renderFocusSessions(user.focusSessions);
+                
+                // Update progress
+                progressPercentage.textContent = `${user.progressPercentage}%`;
+                overallProgress.style.width = `${user.progressPercentage}%`;
+                
+                // Update focus mode buttons
+                if (user.focusModeActive) {
+                    startFocusBtn.classList.add('hidden');
+                    endFocusBtn.classList.remove('hidden');
+                } else {
+                    startFocusBtn.classList.remove('hidden');
+                    endFocusBtn.classList.add('hidden');
+                }
+                
+                hideLoading();
+            }, 800);
+        }
+
+        // Render user interests
+        function renderInterests(interests) {
+            interestsDisplay.innerHTML = '';
+            
+            if (interests.length === 0) {
+                interestsDisplay.innerHTML = '<p>No interests selected yet.</p>';
+                return;
+            }
+            
+            interests.forEach(interest => {
+                const interestTag = document.createElement('div');
+                interestTag.className = 'interest-tag';
+                interestTag.textContent = interest;
+                interestsDisplay.appendChild(interestTag);
+            });
+        }
+
+        // Render user modules
+        function renderModules(modules) {
+            modulesList.innerHTML = '';
+            
+            if (modules.length === 0) {
+                modulesList.innerHTML = '<p>No modules assigned yet.</p>';
+                return;
+            }
+            
+            modules.forEach(module => {
+                const moduleCard = document.createElement('div');
+                moduleCard.className = 'module-card';
+                
+                moduleCard.innerHTML = `
+                    <div class="module-title">${module.title}</div>
+                    <div class="module-status">${module.completed ? 'Completed' : 'In Progress'}</div>
+                    <div class="module-progress">
+                        <div class="progress-bar" style="width: ${module.progress}%"></div>
+                    </div>
+                `;
+                
+                modulesList.appendChild(moduleCard);
+            });
+        }
+
+        // Render user badges
+        function renderBadges(badges) {
+            badgesGrid.innerHTML = '';
+            
+            if (badges.length === 0) {
+                badgesGrid.innerHTML = '<p>No badges earned yet.</p>';
+                return;
+            }
+            
+            badges.forEach(badge => {
+                const badgeItem = document.createElement('div');
+                badgeItem.className = 'badge-item';
+                
+                badgeItem.innerHTML = `
+                    <div class="badge-icon">${badge.icon}</div>
+                    <div class="badge-name">${badge.name}</div>
+                    <div class="badge-date">${formatDate(badge.date)}</div>
+                `;
+                
+                badgesGrid.appendChild(badgeItem);
+            });
+        }
+
+        // Render focus sessions
+        function renderFocusSessions(sessions) {
+            focusSessions.innerHTML = '';
+            
+            if (sessions.length === 0) {
+                focusSessions.innerHTML = '<p>No focus sessions yet.</p>';
+                return;
+            }
+            
+            sessions.forEach(session => {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'session-item';
+                
+                sessionItem.innerHTML = `
+                    <div class="session-date">${formatDate(session.date)}</div>
+                    <div class="session-duration">${session.duration} minutes</div>
+                `;
+                
+                focusSessions.appendChild(sessionItem);
+            });
+        }
+
+        // Show edit interests modal
+        function showEditInterests() {
+            // Populate interests grid
+            interestsGrid.innerHTML = '';
+            
+            const userInterests = userDatabase[currentUser].interests;
+            
+            allInterests.forEach(interest => {
+                const interestItem = document.createElement('div');
+                interestItem.className = 'interest-checkbox';
+                
+                const isChecked = userInterests.includes(interest);
+                
+                interestItem.innerHTML = `
+                    <input type="checkbox" id="interest-${interest}" value="${interest}" ${isChecked ? 'checked' : ''}>
+                    <label for="interest-${interest}">${interest}</label>
+                `;
+                
+                interestsGrid.appendChild(interestItem);
+            });
+            
+            editInterestsModal.classList.remove('hidden');
+        }
+
+        // Hide edit interests modal
+        function hideEditInterests() {
+            editInterestsModal.classList.add('hidden');
+        }
+
+        // Save updated interests
+        function saveInterests() {
+            showLoading();
+            
+            // Get selected interests
+            const selectedInterests = [];
+            const checkboxes = interestsGrid.querySelectorAll('input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                selectedInterests.push(checkbox.value);
+            });
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Update user data
+                userDatabase[currentUser].interests = selectedInterests;
+                
+                // Refresh UI
+                renderInterests(selectedInterests);
+                
+                // Hide modal
+                hideEditInterests();
+                
+                // Show success message
+                showStatusMessage('Interests updated successfully!', 'success');
+                
+                hideLoading();
+            }, 1000);
+        }
+
+        // Start a focus session
+        function startFocusSession() {
+            showLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Update user data
+                userDatabase[currentUser].focusModeActive = true;
+                
+                // Create new session
+                const now = new Date();
+                activeFocusSession = {
+                    date: now.toISOString().split('T')[0],
+                    startTime: now,
+                    duration: 0
+                };
+                
+                // Update UI
+                startFocusBtn.classList.add('hidden');
+                endFocusBtn.classList.remove('hidden');
+                
+                // Show success message
+                showStatusMessage('Focus session started!', 'success');
+                
+                hideLoading();
+            }, 800);
+        }
+
+        // End a focus session
+        function endFocusSession() {
+            showLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Update user data
+                userDatabase[currentUser].focusModeActive = false;
+                
+                // Calculate duration
+                const now = new Date();
+                const duration = Math.round((now - activeFocusSession.startTime) / 60000); // Convert to minutes
+                
+                // Add to focus sessions
+                const newSession = {
+                    date: activeFocusSession.date,
+                    duration: duration
+                };
+                
+                userDatabase[currentUser].focusSessions.unshift(newSession);
+                
+                // Reset active session
+                activeFocusSession = null;
+                
+                // Update UI
+                renderFocusSessions(userDatabase[currentUser].focusSessions);
+                startFocusBtn.classList.remove('hidden');
+                endFocusBtn.classList.add('hidden');
+                
+                // Show success message
+                showStatusMessage(`Focus session ended! Duration: ${duration} minutes`, 'success');
+                
+                hideLoading();
+            }, 800);
+        }
+
+        // Earn a random badge
+        function earnRandomBadge() {
+            showLoading();
+            
+            // Get badges user doesn't have yet
+            const userBadges = userDatabase[currentUser].badges;
+            const userBadgeIds = userBadges.map(badge => badge.id);
+            const availableBadges = allBadges.filter(badge => !userBadgeIds.includes(badge.id));
+            
+            if (availableBadges.length === 0) {
+                hideLoading();
+                showStatusMessage('You have earned all available badges!', 'error');
+                return;
+            }
+            
+            // Select a random badge
+            const randomBadge = availableBadges[Math.floor(Math.random() * availableBadges.length)];
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Add badge to user
+                const newBadge = {
+                    ...randomBadge,
+                    date: new Date().toISOString().split('T')[0]
+                };
+                
+                userDatabase[currentUser].badges.push(newBadge);
+                
+                // Update UI
+                renderBadges(userDatabase[currentUser].badges);
+                
+                // Show success message
+                showStatusMessage(`Congratulations! You earned the "${randomBadge.name}" badge!`, 'success');
+                
+                hideLoading();
+            }, 1000);
+        }
+
+        // Show status message
+        function showStatusMessage(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message status-${type}`;
+            statusMessage.classList.remove('hidden');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Show loading overlay
+        function showLoading() {
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        // Hide loading overlay
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>

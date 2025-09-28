@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Finance</title>
+    <style>
+        :root {
+            --color-primary: #0a192f;
+            --color-secondary: #172a45;
+            --color-accent: #4bcfea;
+            --color-text: #e6f1ff;
+            --color-success: #00e676;
+            --color-error: #ff4c4c;
+            --glass-background: rgba(23, 42, 69, 0.7);
+            --glass-border: 1px solid rgba(75, 207, 234, 0.3);
+            --glass-glow: 0 0 20px rgba(75, 207, 234, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a192f 0%, #172a45 100%);
+            color: var(--color-text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--color-accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--color-accent);
+        }
+
+        .module-container {
+            background: var(--glass-background);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            box-shadow: var(--glass-glow);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .module-title {
+            font-size: 2rem;
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .module-description {
+            color: rgba(230, 241, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .content-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+        }
+        
+        .section-content h4 {
+            color: var(--color-accent);
+            margin-top: 1rem;
+        }
+
+        .section-content {
+            line-height: 1.6;
+        }
+
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .action-button {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .action-button:hover {
+            background-color: #3aa8c1;
+            transform: translateY(-2px);
+        }
+        
+        .topic-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .topic-button {
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+            border: var(--glass-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .topic-button:hover, .topic-button.active {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            transform: translateY(-2px);
+        }
+        
+        .content-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .quiz-container .question-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .quiz-container .question-container h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .quiz-container .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .quiz-container .option-button {
+            background-color: var(--color-secondary);
+            color: var(--color-text);
+            border: var(--glass-border);
+            text-align: left;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .quiz-container .option-button:hover:not(:disabled) {
+            background-color: rgba(75, 207, 234, 0.2);
+        }
+        
+        .quiz-container .option-button.correct {
+            background-color: var(--color-success);
+            color: var(--color-primary);
+        }
+        
+        .quiz-container .option-button.incorrect {
+            background-color: var(--color-error);
+            color: var(--color-primary);
+        }
+        
+        .quiz-container .option-button:disabled {
+            cursor: not-allowed;
+        }
+        
+        .quiz-container .next-btn, .quiz-container .return-btn {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .quiz-container .next-btn:hover, .quiz-container .return-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">FinScholars</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="#" class="nav-link">Profile</a>
+        </div>
+    </div>
+
+    <div class="module-container">
+        <div class="module-header">
+            <div>
+                <h1 class="module-title">Introduction to Finance</h1>
+                <p class="module-description">Learn the fundamental concepts and principles of finance</p>
+                <p id="module-level">Level: Basic</p>
+            </div>
+        </div>
+
+        <div class="topic-buttons">
+            <button class="topic-button active" data-topic="financial-fundamentals">Understanding Financial Fundamentals</button>
+            <button class="topic-button" data-topic="investment-basics">Investment Basics</button>
+            <button class="topic-button" data-topic="financial-planning">Financial Planning</button>
+        </div>
+
+        <div id="module-content">
+            <div id="financial-fundamentals" class="content-section active">
+                <h3 class="section-title">Understanding Financial Fundamentals</h3>
+                <div class="section-content">
+                    <p>Finance is the study of money management and the process of acquiring needed funds. It encompasses personal, corporate, and public finance.</p>
+                    
+                    <h4>Key Concepts</h4>
+                    <ul>
+                        <li><strong>Income:</strong> Money received from work, investments, or other sources</li>
+                        <li><strong>Expenses:</strong> Money spent on goods and services</li>
+                        <li><strong>Assets:</strong> Things you own that have value</li>
+                        <li><strong>Liabilities:</strong> Debts or obligations you owe</li>
+                        <li><strong>Net Worth:</strong> Total assets minus total liabilities</li>
+                    </ul>
+                    
+                    <h4>Significance & Impact</h4>
+                    <p>Financial literacy is the foundation for building wealth and achieving financial independence. Understanding these fundamentals allows you to:</p>
+                    <ul>
+                        <li>Make informed decisions about spending, saving, and investing</li>
+                        <li>Avoid common financial pitfalls and predatory practices</li>
+                        <li>Build generational wealth and break cycles of financial struggle</li>
+                        <li>Achieve personal financial goals like homeownership or retirement</li>
+                    </ul>
+                    
+                    <h4>Practical Applications</h4>
+                    <p>Applying financial fundamentals to your daily life can transform your financial situation:</p>
+                    <ul>
+                        <li>Track income and expenses to identify spending patterns</li>
+                        <li>Create a budget that aligns with your financial goals</li>
+                        <li>Build an emergency fund to handle unexpected expenses</li>
+                        <li>Regularly calculate your net worth to measure financial progress</li>
+                    </ul>
+                    <button class="action-button quiz-starter" data-topic="financial-fundamentals" style="display: block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Start Quiz</button>
+                </div>
+            </div>
+            
+            <div id="investment-basics" class="content-section">
+                <h3 class="section-title">Investment Basics</h3>
+                <div class="section-content">
+                    <p>Investing is the process of allocating resources, usually money, with the expectation of generating income or profit over time.</p>
+                    
+                    <h4>Common Investment Types</h4>
+                    <ul>
+                        <li><strong>Stocks:</strong> Ownership shares in a company that may increase in value and pay dividends</li>
+                        <li><strong>Bonds:</strong> Loans to companies or governments that pay regular interest</li>
+                        <li><strong>Mutual Funds:</strong> Professionally managed investment portfolios that pool money from many investors</li>
+                        <li><strong>ETFs:</strong> Exchange-traded funds that track indexes, commodities, or baskets of assets</li>
+                        <li><strong>Real Estate:</strong> Property investments that can generate rental income and appreciate in value</li>
+                    </ul>
+                    
+                    <h4>Why Investing Matters</h4>
+                    <p>Investing is crucial for building long-term wealth and achieving financial goals for several reasons:</p>
+                    <ul>
+                        <li>Helps your money grow faster than inflation, preserving purchasing power</li>
+                        <li>Provides passive income streams that can supplement or replace active income</li>
+                        <li>Enables retirement planning by building a nest egg for your future</li>
+                        <li>Creates opportunities for financial independence and generational wealth</li>
+                    </ul>
+                    
+                    <h4>Getting Started</h4>
+                    <p>Begin your investment journey with these steps:</p>
+                    <ul>
+                        <li>Set clear financial goals with specific timeframes</li>
+                        <li>Understand your risk tolerance and investment horizon</li>
+                        <li>Research different investment options and their historical performance</li>
+                        <li>Start with a small amount and consistently add to your investments</li>
+                        <li>Consider diversification to spread risk across different asset classes</li>
+                    </ul>
+                    <button class="action-button quiz-starter" data-topic="investment-basics" style="display: block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Start Quiz</button>
+                </div>
+            </div>
+            
+            <div id="financial-planning" class="content-section">
+                <h3 class="section-title">Financial Planning</h3>
+                <div class="section-content">
+                    <p>Financial planning is the process of setting goals, developing strategies, and making decisions to achieve your financial objectives.</p>
+                    
+                    <h4>Key Components</h4>
+                    <ul>
+                        <li><strong>Budgeting:</strong> Creating a plan for how to spend and save your money</li>
+                        <li><strong>Retirement Planning:</strong> Preparing financially for life after your working years</li>
+                        <li><strong>Tax Planning:</strong> Organizing finances to minimize tax liability</li>
+                        <li><strong>Insurance Planning:</strong> Protecting against financial risks through appropriate coverage</li>
+                        <li><strong>Estate Planning:</strong> Arranging for the management and disposal of assets during life and after death</li>
+                    </ul>
+                    
+                    <h4>Benefits of Financial Planning</h4>
+                    <p>A comprehensive financial plan provides numerous advantages:</p>
+                    <ul>
+                        <li>Reduces financial stress and anxiety by creating clarity and direction</li>
+                        <li>Helps prioritize spending and saving based on your values and goals</li>
+                        <li>Provides a roadmap for major life transitions (career changes, marriage, children)</li>
+                        <li>Creates financial security for yourself and your loved ones</li>
+                        <li>Allows you to adapt to changing economic conditions and personal circumstances</li>
+                    </ul>
+                    
+                    <h4>Creating Your Financial Plan</h4>
+                    <p>Follow these steps to develop an effective financial plan:</p>
+                    <ul>
+                        <li>Assess your current financial situation (income, expenses, assets, liabilities)</li>
+                        <li>Define specific, measurable, achievable, relevant, and time-bound (SMART) financial goals</li>
+                        <li>Identify potential obstacles and develop strategies to overcome them</li>
+                        <li>Implement your plan with specific action steps</li>
+                        <li>Review and adjust your plan regularly as your life circumstances change</li>
+                    </ul>
+                    <button class="action-button quiz-starter" data-topic="financial-planning" style="display: block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Start Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const topicButtons = document.querySelectorAll('.topic-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const moduleContentContainer = document.getElementById('module-content');
+            
+            const topicQuestions = {
+                'financial-fundamentals': [
+                    {
+                        question: "What is the difference between an asset and a liability?",
+                        options: [
+                            "Assets decrease your net worth, liabilities increase it",
+                            "Assets are things you own that have value, liabilities are debts you owe",
+                            "Assets are only physical items, liabilities are only loans",
+                            "There is no difference, they are the same thing"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Which of the following best describes net worth?",
+                        options: [
+                            "Total income minus total expenses",
+                            "Total assets minus total liabilities",
+                            "Total investments minus total savings",
+                            "Total salary minus total taxes"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "What is the primary purpose of financial planning?",
+                        options: [
+                            "To maximize debt",
+                            "To avoid all financial risks",
+                            "To set goals and develop strategies to achieve financial objectives",
+                            "To eliminate the need for budgeting"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Which of the following is NOT typically considered an investment vehicle?",
+                        options: [
+                            "Stocks",
+                            "Bonds",
+                            "Credit card debt",
+                            "Real estate"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Why is diversification important in investing?",
+                        options: [
+                            "It guarantees higher returns",
+                            "It eliminates all investment risk",
+                            "It spreads risk across different asset classes",
+                            "It ensures you only invest in stocks"
+                        ],
+                        answer: 2
+                    }
+                ],
+                'investment-basics': [
+                    {
+                        question: "What is compound interest?",
+                        options: [
+                            "Interest paid only on the principal amount",
+                            "Interest earned on both the initial principal and the accumulated interest",
+                            "A fixed interest rate that never changes",
+                            "Interest that is only compounded once per year"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Which investment typically has the highest potential return over the long term?",
+                        options: [
+                            "Savings accounts",
+                            "Government bonds",
+                            "Stocks",
+                            "Certificates of deposit (CDs)"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "What is a mutual fund?",
+                        options: [
+                            "A loan given by multiple banks",
+                            "A collection of stocks, bonds, or other securities owned by a group of investors and managed by a professional",
+                            "A government program for retirement savings",
+                            "A type of insurance policy"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "What does 'bull market' refer to?",
+                        options: [
+                            "A market where prices are falling",
+                            "A market where prices are rising",
+                            "A market with high volatility",
+                            "A market controlled by large institutional investors"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "What is an ETF (Exchange-Traded Fund)?",
+                        options: [
+                            "A type of retirement account",
+                            "A fund that trades on an exchange like a stock but tracks an index, sector, or commodity",
+                            "A government bond with tax benefits",
+                            "A high-risk investment option only for professional traders"
+                        ],
+                        answer: 1
+                    }
+                ],
+                'financial-planning': [
+                    {
+                        question: "What is an emergency fund?",
+                        options: [
+                            "Money set aside for vacation expenses",
+                            "Savings specifically for retirement",
+                            "Money reserved for unexpected expenses or financial emergencies",
+                            "An investment account for high-risk stocks"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "How much should an ideal emergency fund cover?",
+                        options: [
+                            "1-2 weeks of expenses",
+                            "2-4 weeks of expenses",
+                            "3-6 months of expenses",
+                            "1-2 years of expenses"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "What is a budget?",
+                        options: [
+                            "A restriction on spending",
+                            "A plan for how to spend and save money",
+                            "A type of investment account",
+                            "A government tax program"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "What is the purpose of a retirement plan?",
+                        options: [
+                            "To provide income during retirement years",
+                            "To reduce current taxes only",
+                            "To increase current spending power",
+                            "To pay off student loans"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "What is the difference between a traditional IRA and a Roth IRA?",
+                        options: [
+                            "There is no difference",
+                            "Traditional IRA contributions are tax-deductible now but taxed in retirement; Roth IRA contributions are taxed now but tax-free in retirement",
+                            "Traditional IRAs are only for employees; Roth IRAs are only for self-employed individuals",
+                            "Traditional IRAs can only invest in stocks; Roth IRAs can only invest in bonds"
+                        ],
+                        answer: 1
+                    }
+                ]
+            };
+            
+            // Function to build quiz UI and functionality
+            function buildQuiz(container, questions, topicId) {
+                let currentQuestionIndex = 0;
+                let score = 0;
+                
+                function displayQuestion() {
+                    container.innerHTML = '';
+                    
+                    if (currentQuestionIndex < questions.length) {
+                        const currentQuestion = questions[currentQuestionIndex];
+                        
+                        // Create question elements manually instead of using template literals
+                        container.innerHTML = '';
+                        
+                        const questionCard = document.createElement('div');
+                        questionCard.className = 'quiz-question-card';
+                        
+                        const questionTitle = document.createElement('h3');
+                        questionTitle.textContent = 'Question ' + (currentQuestionIndex + 1) + ':';
+                        questionTitle.style.marginBottom = '15px';
+                        questionCard.appendChild(questionTitle);
+                        
+                        const questionText = document.createElement('p');
+                        questionText.textContent = currentQuestion.question;
+                        questionText.style.marginBottom = '20px';
+                        questionCard.appendChild(questionText);
+                        
+                        const optionsDiv = document.createElement('div');
+                        optionsDiv.className = 'options';
+                        optionsDiv.style.display = 'flex';
+                        optionsDiv.style.flexDirection = 'column';
+                        optionsDiv.style.gap = '12px';
+                        
+                        // Create option buttons
+                        currentQuestion.options.forEach((option, index) => {
+                            const optionButton = document.createElement('button');
+                            optionButton.className = 'option-button';
+                            optionButton.setAttribute('data-index', index);
+                            optionButton.textContent = option;
+                            optionButton.style.padding = '10px';
+                            optionButton.style.margin = '5px 0';
+                            optionButton.style.borderRadius = '5px';
+                            optionButton.style.cursor = 'pointer';
+                            optionsDiv.appendChild(optionButton);
+                        });
+                        
+                        questionCard.appendChild(optionsDiv);
+                        
+                        const nextBtn = document.createElement('button');
+                        nextBtn.className = 'next-btn';
+                        nextBtn.textContent = 'Next Question';
+                        nextBtn.style.display = 'none';
+                        questionCard.appendChild(nextBtn);
+                        
+                        container.appendChild(questionCard);
+                        
+                        const nextButton = container.querySelector('.next-btn');
+                        nextButton.addEventListener('click', () => {
+                            currentQuestionIndex++;
+                            displayQuestion();
+                        });
+                        
+                        container.querySelectorAll('.option-button').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const selectedIndex = parseInt(this.getAttribute('data-index'));
+                                const isCorrect = selectedIndex === currentQuestion.answer;
+                                
+                                container.querySelectorAll('.option-button').forEach(btn => btn.disabled = true);
+                                this.classList.add(isCorrect ? 'correct' : 'incorrect');
+                                if (!isCorrect) {
+                                    container.querySelector(`[data-index="${currentQuestion.answer}"]`).classList.add('correct');
+                                }
+                                
+                                if (isCorrect) {
+                                    score++;
+                                }
+                                
+                                nextButton.style.display = 'block';
+                            });
+                        });
+                        
+                    } else {
+                        // Quiz completed, show results
+                        const scorePercentage = Math.round((score / questions.length) * 100);
+                        let feedbackText = '';
+                        if (scorePercentage >= 80) {
+                            feedbackText = 'Great job! You have a good understanding of this topic.';
+                            let completedTopics = JSON.parse(localStorage.getItem('finance_completed_topics') || '[]');
+                            if (!completedTopics.includes(topicId)) {
+                                completedTopics.push(topicId);
+                                localStorage.setItem('finance_completed_topics', JSON.stringify(completedTopics));
+                                
+                                // Update progress bar by 33% for each completed topic (since there are 3 topics)
+                                let currentProgress = parseInt(localStorage.getItem('finance_progress') || '0');
+                                currentProgress += 33;
+                                if (currentProgress > 100) currentProgress = 100;
+                                localStorage.setItem('finance_progress', currentProgress.toString());
+                                
+                                // Update dashboard progress if on dashboard page
+                                if (window.updateModuleProgress) {
+                                    window.updateModuleProgress('intro_to_finance', currentProgress);
+                                }
+                            }
+                        } else {
+                            feedbackText = 'Keep studying! Review this topic to strengthen your understanding.';
+                        }
+                        
+                        // Create result elements manually instead of using template literals
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'quiz-result-card';
+                        
+                        const resultTitle = document.createElement('h3');
+                        resultTitle.textContent = 'Quiz Completed!';
+                        resultDiv.appendChild(resultTitle);
+                        
+                        const scoreText = document.createElement('p');
+                        scoreText.textContent = 'Your score: ' + score + '/' + questions.length + ' (' + scorePercentage + '%)';
+                        resultDiv.appendChild(scoreText);
+                        
+                        const feedbackElement = document.createElement('p');
+                        feedbackElement.textContent = feedbackText;
+                        resultDiv.appendChild(feedbackElement);
+                        
+                        const returnButton = document.createElement('button');
+                        returnButton.className = 'return-btn';
+                        returnButton.textContent = 'Return to Module';
+                        resultDiv.appendChild(returnButton);
+                        
+                        container.innerHTML = '';
+                        container.appendChild(resultDiv);
+                        
+                        container.querySelector('.return-btn').addEventListener('click', () => {
+                            const topicSection = document.getElementById(topicId);
+                            container.remove();
+                            topicSection.classList.add('active');
+                            topicButtons.forEach(btn => btn.classList.remove('active'));
+                            document.querySelector(`[data-topic="${topicId}"]`).classList.add('active');
+                        });
+                    }
+                }
+                
+                displayQuestion();
+            }
+            
+            // Event listener for topic buttons
+            topicButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    topicButtons.forEach(btn => btn.classList.remove('active'));
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const topicId = this.getAttribute('data-topic');
+                    document.getElementById(topicId).classList.add('active');
+                    
+                    // Clear any previous quiz container
+                    const existingQuizContainer = moduleContentContainer.querySelector('.quiz-container');
+                    if (existingQuizContainer) {
+                        existingQuizContainer.remove();
+                    }
+                });
+            });
+            
+            // Event listener for quiz starter buttons
+            document.querySelectorAll('.quiz-starter').forEach(button => {
+                button.addEventListener('click', function() {
+                    const topicId = this.getAttribute('data-topic');
+                    const questions = topicQuestions[topicId];
+                    
+                    contentSections.forEach(section => section.classList.remove('active'));
+                    
+                    const quizContainer = document.createElement('div');
+                    quizContainer.className = 'quiz-container content-section active';
+                    quizContainer.setAttribute('data-topic', topicId);
+                    
+                    moduleContentContainer.appendChild(quizContainer);
+                    buildQuiz(quizContainer, questions, topicId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

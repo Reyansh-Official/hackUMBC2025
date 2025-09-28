@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinScholars Preview</title>
+  <style>
+    :root {
+      --color-background: #0A0E18;
+      --color-background-light: #1A1F2E;
+      --color-accent: #00FFFF;
+      --color-accent-rich: #4BCFEA;
+      --color-text: #FFFFFF;
+      --color-text-secondary: rgba(255, 255, 255, 0.7);
+      --color-success: #00E676;
+      --color-error: #FF4C4C;
+      --glass-background: rgba(255, 255, 255, 0.05);
+      --glass-background-accent: rgba(0, 255, 255, 0.05);
+      --glass-border: 1px solid rgba(75, 207, 234, 0.2);
+      --glass-glow: 0 0 15px rgba(75, 207, 234, 0.2);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Poppins', 'Roboto', sans-serif;
+    }
+    
+    body {
+      background-color: var(--color-background);
+      color: var(--color-text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .title {
+      font-size: 3rem;
+      text-align: center;
+      margin: 2rem 0;
+      color: var(--color-text);
+      text-shadow: 0 0 10px rgba(75, 207, 234, 0.3);
+    }
+    
+    .subtitle {
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      color: var(--color-text-secondary);
+    }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .glass-card {
+      background: var(--glass-background);
+      backdrop-filter: blur(12px);
+      border: var(--glass-border);
+      box-shadow: var(--glass-glow);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .glass-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(75, 207, 234, 0.4);
+    }
+    
+    .card-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: white;
+    }
+    
+    .card-description {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, var(--color-accent), var(--color-accent-rich));
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(75, 207, 234, 0.4);
+    }
+    
+    .button {
+      background: var(--color-accent);
+      color: var(--color-background);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(75, 207, 234, 0.4);
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(75, 207, 234, 0.6);
+    }
+    
+    .button-secondary {
+      background: transparent;
+      color: var(--color-accent);
+      border: 2px solid var(--color-accent);
+    }
+    
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--glass-background);
+      backdrop-filter: blur(12px);
+      border-bottom: var(--glass-border);
+      box-shadow: var(--glass-glow);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--color-accent);
+      text-shadow: 0 0 10px rgba(75, 207, 234, 0.4);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-link {
+      color: var(--color-text);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: var(--color-accent);
+      text-shadow: 0 0 10px rgba(75, 207, 234, 0.4);
+    }
+    
+    .login-button {
+      background: var(--color-accent);
+      color: var(--color-background);
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(75, 207, 234, 0.4);
+      text-decoration: none;
+    }
+    
+    .login-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(75, 207, 234, 0.6);
+    }
+    
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 2rem;
+    }
+    
+    .hero-title {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, var(--color-text), var(--color-accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 20px rgba(75, 207, 234, 0.2);
+    }
+    
+    .hero-subtitle {
+      font-size: 1.5rem;
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin-bottom: 3rem;
+    }
+    
+    .quiz-container {
+      background: var(--glass-background);
+      backdrop-filter: blur(12px);
+      border: var(--glass-border);
+      box-shadow: var(--glass-glow);
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 2rem auto;
+    }
+    
+    .quiz-title {
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+    }
+    
+    .quiz-question {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .quiz-option {
+      background: var(--glass-background-accent);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(75, 207, 234, 0.3);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .quiz-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(75, 207, 234, 0.4);
+      border-color: rgba(75, 207, 234, 0.6);
+    }
+    
+    .quiz-option.correct {
+      border-color: var(--color-success);
+      background: rgba(0, 230, 118, 0.1);
+      box-shadow: 0 0 15px rgba(0, 230, 118, 0.5);
+    }
+    
+    .quiz-option.incorrect {
+      border-color: var(--color-error);
+      background: rgba(255, 76, 76, 0.1);
+      box-shadow: 0 0 15px rgba(255, 76, 76, 0.5);
+    }
+    
+    .listen-button {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      background: var(--glass-background-accent);
+      border: var(--glass-border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .listen-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(75, 207, 234, 0.5);
+    }
+    
+    .section {
+      margin: 5rem 0;
+    }
+    
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    /* Cursor animation */
+    .cursor {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: transparent;
+      border: 2px solid var(--color-accent);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 9999;
+      transition: width 0.3s, height 0.3s;
+      box-shadow: 0 0 10px rgba(75, 207, 234, 0.7);
+    }
+    
+    .cursor::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: var(--color-accent);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* Canvas for background animation */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="background-animation"></canvas>
+  
+  <div class="cursor"></div>
+  
+  <nav class="navbar">
+    <div class="logo">FinScholars</div>
+    <div class="nav-links" style="display: flex; align-items: center; gap: 2.5rem;">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="login.html" class="login-button">Login</a>
+      <a href="signup.html" class="login-button">Sign Up</a>
+    </div>
+  </nav>
+  
+  <section id="home" class="hero">
+    <h1 class="hero-title">FinScholars</h1>
+    <p class="hero-subtitle">Master your financial future with our interactive learning platform. Gain the knowledge and skills to make informed financial decisions.</p>
+    <a href="login.html" class="button">Get Started</a>
+  </section>
+  
+  <!-- Dashboard and Quiz sections are hidden until login -->
+  <script>
+    // These sections will only be shown after login
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if user is logged in - this would be replaced with actual auth check
+      const isLoggedIn = false; // Default to not logged in for preview
+      
+      // Hide sections that require login
+      if (!isLoggedIn) {
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('quiz').style.display = 'none';
+      }
+    });
+  </script>
+  
+  <section id="dashboard" class="section">
+    <div class="container">
+      <h2 class="section-title">Your Learning Modules</h2>
+      <div class="card-grid">
+        <div class="glass-card">
+          <h3 class="card-title">Introduction to Finance</h3>
+          <p class="card-description">Learn the fundamentals of finance and basic concepts to build your knowledge foundation.</p>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 100%"></div>
+          </div>
+          <a href="#" class="button">Review</a>
+        </div>
+        
+        <div class="glass-card">
+          <h3 class="card-title">Budgeting Basics</h3>
+          <p class="card-description">Master the art of creating and maintaining a personal budget to achieve financial goals.</p>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 65%"></div>
+          </div>
+          <a href="#" class="button">Continue</a>
+        </div>
+        
+        <div class="glass-card">
+          <h3 class="card-title">Investment Strategies</h3>
+          <p class="card-description">Explore different investment vehicles and strategies to grow your wealth over time.</p>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 30%"></div>
+          </div>
+          <a href="#" class="button">Continue</a>
+        </div>
+        
+        <div class="glass-card">
+          <h3 class="card-title">Retirement Planning</h3>
+          <p class="card-description">Plan for your future by understanding retirement accounts and long-term financial planning.</p>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: 0%"></div>
+          </div>
+          <a href="#" class="button">Start</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="quiz" class="section">
+    <div class="container">
+      <h2 class="section-title">Test Your Knowledge</h2>
+      <div class="quiz-container">
+        <div class="listen-button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.5,12A2.5,2.5,0,0,0,12,9.5v5A2.5,2.5,0,0,0,14.5,12ZM12,6.5v0A5.5,5.5,0,0,1,17.5,12h0A5.5,5.5,0,0,1,12,17.5v0h0V6.5ZM3,12H6a6,6,0,0,0,12,0h3a9,9,0,0,1-18,0Z" fill="#4BCFEA"/>
+          </svg>
+        </div>
+        <h3 class="quiz-title">Investment Basics</h3>
+        <p class="quiz-question">What is the primary difference between stocks and bonds?</p>
+        <div class="quiz-options">
+          <div class="quiz-option correct">Stocks represent ownership, bonds represent debt</div>
+          <div class="quiz-option">Stocks are always riskier than bonds</div>
+          <div class="quiz-option">Bonds always provide higher returns than stocks</div>
+          <div class="quiz-option">Stocks are issued by governments, bonds by companies</div>
+        </div>
+        <div style="display: flex; justify-content: space-between;">
+          <button class="button button-secondary">Previous</button>
+          <button class="button">Next</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    // Background animation
+    const canvas = document.getElementById('background-animation');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Particle settings
+    const particleCount = 100;
+    const particles = [];
+    const connectionDistance = 150;
+    
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1,
+        color: `rgba(75, 207, 234, ${Math.random() * 0.5 + 0.2})`,
+        speedX: Math.random() * 0.5 - 0.25,
+        speedY: Math.random() * 0.5 - 0.25
+      });
+    }
+    
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw particles
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        
+        // Move particles
+        p.x += p.speedX;
+        p.y += p.speedY;
+        
+        // Wrap around edges
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        
+        // Connect particles
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const distance = Math.sqrt(
+            Math.pow(p.x - p2.x, 2) + Math.pow(p.y - p2.y, 2)
+          );
+          
+          if (distance < connectionDistance) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(75, 207, 234, ${0.2 * (1 - distance / connectionDistance)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+    
+    animate();
+    
+    // Cursor animation
+    const cursor = document.querySelector('.cursor');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    
+    document.addEventListener('mousedown', () => {
+      cursor.style.width = '15px';
+      cursor.style.height = '15px';
+    });
+    
+    document.addEventListener('mouseup', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+    });
+    
+    // Hide cursor when leaving window
+    document.addEventListener('mouseleave', () => {
+      cursor.style.display = 'none';
+    });
+    
+    document.addEventListener('mouseenter', () => {
+      cursor.style.display = 'block';
+    });
+    
+    // Smooth scrolling for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        window.scrollTo({
+          top: targetElement.offsetTop,
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

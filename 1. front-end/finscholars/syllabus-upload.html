@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus Upload - FinScholars</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = 'https://your-supabase-url.supabase.co';
+        const SUPABASE_KEY = 'your-supabase-anon-key';
+        
+        // Use real Supabase client if in production, otherwise use mock
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            window.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } else {
+            // Mock Supabase client for development
+            var mockSupabase = {
+            auth: {
+                getUser: () => Promise.resolve({ data: { user: { id: 'mock-user-id', email: 'user@example.com' } } }),
+                onAuthStateChange: (callback) => {
+                    // Simulate authenticated state
+                    callback('SIGNED_IN', { user: { id: 'mock-user-id', email: 'user@example.com' } });
+                    return { data: { subscription: { unsubscribe: () => {} } } };
+                },
+                signOut: () => Promise.resolve({ error: null })
+            },
+                storage: {
+                    from: (bucket) => ({
+                        upload: (path, file) => Promise.resolve({ 
+                            data: { path: path }, 
+                            error: null 
+                        }),
+                        getPublicUrl: (path) => ({ 
+                            data: { publicUrl: `https://example.com/storage/${bucket}/${path}` } 
+                        })
+                    })
+                },
+                createClient: () => mockSupabase
+            };
+            
+            window.supabase = mockSupabase;
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .upload-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            background-color: #f0f7ff;
+            border-color: #2980b9;
+        }
+        
+        .upload-area i {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .upload-area p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-area .file-types {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-container {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .navbar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            transition: color 0.2s ease;
+        }
+        
+        .navbar-links a:hover {
+            color: #3498db;
+        }
+        
+        .file-info {
+            margin-top: 1.5rem;
+            display: none;
+        }
+        
+        .progress-container {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .progress {
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .status-container {
+            margin-top: 1rem;
+        }
+        
+        .file-info .file-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info .file-size {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .progress-container {
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .status-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+        
+        .status-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: #95a5a6;
+        }
+        
+        .status-processing {
+            background-color: #f39c12;
+        }
+        
+        .status-completed {
+            background-color: #2ecc71;
+        }
+        
+        .status-error {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">FinScholars</a>
+        <div class="navbar-links">
+            <a href="index.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="syllabus-upload.html">Upload Syllabus</a>
+            <a href="#" id="logout-link">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="upload-header">
+            <h1>Syllabus Upload</h1>
+            <p>Upload your syllabus to generate custom learning modules</p>
+        </div>
+        
+        <div id="alert-container" class="alert"></div>
+        
+        <div class="card">
+            <h2>Upload Your Syllabus</h2>
+            <p>Upload a syllabus file to generate personalized learning modules based on the content.</p>
+            
+            <div id="upload-area" class="upload-area">
+                <i>📄</i>
+                <p>Drag and drop your syllabus file here</p>
+                <p>or</p>
+                <button id="browse-btn" class="btn">Browse Files</button>
+                <p class="file-types">Supported formats: PDF, DOCX, TXT</p>
+                <input type="file" id="file-input" class="file-input" accept=".pdf,.docx,.txt">
+            </div>
+            
+            <div id="file-info" class="file-info">
+                <p class="file-name" id="file-name"></p>
+                <p class="file-size" id="file-size"></p>
+                <div class="btn-container">
+                    <button id="upload-btn" class="btn">Upload and Process</button>
+                    <button id="cancel-btn" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+            
+            <div id="progress-container" class="progress-container">
+                <p>Uploading...</p>
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+            </div>
+            
+            <div id="status-container" class="status-container">
+                <h3>Processing Status</h3>
+                <div class="status-step">
+                    <div id="upload-status" class="status-icon status-pending">1</div>
+                    <span>Uploading file</span>
+                </div>
+                <div class="status-step">
+                    <div id="extract-status" class="status-icon status-pending">2</div>
+                    <span>Extracting text</span>
+                </div>
+                <div class="status-step">
+                    <div id="analyze-status" class="status-icon status-pending">3</div>
+                    <span>Analyzing with AI</span>
+                </div>
+                <div class="status-step">
+                    <div id="save-status" class="status-icon status-pending">4</div>
+                    <span>Saving modules</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize Supabase client
+            const supabase = window.supabase.createClient();
+            
+            // Check if user is authenticated
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // DOM elements
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const browseBtn = document.getElementById('browse-btn');
+            const fileInfo = document.getElementById('file-info');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const uploadBtn = document.getElementById('upload-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const progressContainer = document.getElementById('progress-container');
+            const progress = document.getElementById('progress');
+            const statusContainer = document.getElementById('status-container');
+            const uploadStatus = document.getElementById('upload-status');
+            const extractStatus = document.getElementById('extract-status');
+            const analyzeStatus = document.getElementById('analyze-status');
+            const saveStatus = document.getElementById('save-status');
+            
+            // Selected file
+            let selectedFile = null;
+            
+            // Event listeners for drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFileSelection(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Click to browse files
+            browseBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length) {
+                    handleFileSelection(fileInput.files[0]);
+                }
+            });
+            
+            // Handle file selection
+            function handleFileSelection(file) {
+                // Check file type
+                const fileType = file.name.split('.').pop().toLowerCase();
+                if (!['pdf', 'docx', 'txt'].includes(fileType)) {
+                    showAlert('Please select a PDF, DOCX, or TXT file.', 'danger');
+                    return;
+                }
+                
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    showAlert('File size exceeds 10MB limit.', 'danger');
+                    return;
+                }
+                
+                selectedFile = file;
+                
+                // Show file info
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                uploadArea.style.display = 'none';
+            }
+            
+            // Format file size
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+                else return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+            }
+            
+            // Cancel upload
+            cancelBtn.addEventListener('click', function() {
+                resetUpload();
+            });
+            
+            // Reset upload state
+            function resetUpload() {
+                selectedFile = null;
+                fileInput.value = '';
+                fileInfo.style.display = 'none';
+                uploadArea.style.display = 'block';
+                progressContainer.style.display = 'none';
+                statusContainer.style.display = 'none';
+                progress.style.width = '0%';
+                
+                // Reset status icons
+                uploadStatus.className = 'status-icon status-pending';
+                extractStatus.className = 'status-icon status-pending';
+                analyzeStatus.className = 'status-icon status-pending';
+                saveStatus.className = 'status-icon status-pending';
+            }
+            
+            // Upload and process file
+            uploadBtn.addEventListener('click', async function() {
+                if (!selectedFile) return;
+                
+                try {
+                    // Show progress and status
+                    progressContainer.style.display = 'block';
+                    statusContainer.style.display = 'block';
+                    
+                    // Step 1: Upload file to Supabase Storage
+                    uploadStatus.className = 'status-icon status-processing';
+                    
+                    // Generate a unique file path
+                    const timestamp = new Date().getTime();
+                    const filePath = `syllabi/${user.id}/${timestamp}_${selectedFile.name}`;
+                    
+                    // Simulate upload progress
+                    let progressValue = 0;
+                    const progressInterval = setInterval(() => {
+                        progressValue += 5;
+                        if (progressValue > 90) clearInterval(progressInterval);
+                        progress.style.width = progressValue + '%';
+                    }, 200);
+                    
+                    // Upload file to Supabase Storage
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('syllabi')
+                        .upload(filePath, selectedFile);
+                    
+                    clearInterval(progressInterval);
+                    
+                    if (uploadError) {
+                        throw new Error('File upload failed: ' + uploadError.message);
+                    }
+                    
+                    progress.style.width = '100%';
+                    uploadStatus.className = 'status-icon status-completed';
+                    
+                    // Step 2: Extract text from file
+                    extractStatus.className = 'status-icon status-processing';
+                    
+                    // Get public URL for the uploaded file
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('syllabi')
+                        .getPublicUrl(filePath);
+                    
+                    // Call backend to process the file
+                    const response = await fetch('http://localhost:5001/api/process-syllabus', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: user.id,
+                            file_path: filePath,
+                            file_url: publicUrl,
+                            file_type: selectedFile.name.split('.').pop().toLowerCase()
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to process syllabus');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Update status based on result
+                    extractStatus.className = 'status-icon status-completed';
+                    analyzeStatus.className = 'status-icon status-completed';
+                    saveStatus.className = 'status-icon status-completed';
+                    
+                    showAlert('Syllabus processed successfully! ' + result.modules_created + ' learning modules created.', 'success');
+                    
+                    // Reset upload state after a delay
+                    setTimeout(resetUpload, 3000);
+                    
+                } catch (error) {
+                    console.error('Error processing syllabus:', error);
+                    showAlert('Error: ' + error.message, 'danger');
+                    
+                    // Update status to show error
+                    if (uploadStatus.className.includes('processing')) {
+                        uploadStatus.className = 'status-icon status-error';
+                    } else if (extractStatus.className.includes('processing')) {
+                        extractStatus.className = 'status-icon status-error';
+                    } else if (analyzeStatus.className.includes('processing')) {
+                        analyzeStatus.className = 'status-icon status-error';
+                    } else if (saveStatus.className.includes('processing')) {
+                        saveStatus.className = 'status-icon status-error';
+                    }
+                }
+            });
+            
+            // Handle logout
+            document.getElementById('logout-link').addEventListener('click', async function(e) {
+                e.preventDefault();
+                await supabase.auth.signOut();
+                window.location.href = 'login.html';
+            });
+        });
+        
+        // Helper function to show alerts
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.textContent = message;
+            alertContainer.className = `alert alert-${type}`;
+            alertContainer.style.display = 'block';
+            
+            // Auto-hide success alerts after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertContainer.style.display = 'none';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
